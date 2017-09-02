@@ -1,0 +1,11 @@
+--- iconmgr.h.orig7	2007-09-27 23:01:00.000000000 +0200
++++ iconmgr.h	2007-09-27 23:03:15.000000000 +0200
+@@ -86,7 +86,7 @@
+ extern WList *AddIconManager ( TwmWindow *tmp_win );
+ extern IconMgr *AllocateIconManager ( char *name, char *icon_name, char *geom, int columns );
+ extern void CreateIconManagers ( void );
+-extern void DrawIconManagerBorder ( WList *tmp );
++extern void DrawIconManagerEntry ( WList *tmp );
+ extern void InsertInIconManager ( IconMgr *ip, WList *tmp, TwmWindow *tmp_win );
+ extern void JumpIconManager ( int dir );
+ extern void MoveIconManager ( int dir );

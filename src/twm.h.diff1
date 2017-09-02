@@ -1,0 +1,19 @@
+--- twm.h.orig1	2007-09-18 09:32:17.000000000 +0200
++++ twm.h	2007-09-18 10:07:03.000000000 +0200
+@@ -267,11 +267,11 @@
+     /***********************************************************************
+      * color definitions per window
+      **********************************************************************/
+-    Pixel border;		/* border color */
+-    Pixel icon_border;		/* border color */
+-    ColorPair border_tile;
+-    ColorPair title;
+-    ColorPair iconc;
++    Pixel BorderColor;		/* border color */
++    Pixel IconBorderColor;	/* icon border color */
++    ColorPair BorderTileC;
++    ColorPair TitleC;
++    ColorPair IconC;
+     short iconified;		/* has the window ever been iconified? */
+     short icon;			/* is the window an icon now ? */
+     short icon_on;		/* is the icon visible */

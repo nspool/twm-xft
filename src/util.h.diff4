@@ -1,0 +1,14 @@
+--- util.h.orig4	2007-10-29 22:56:21.000000000 +0100
++++ util.h	2007-10-29 22:59:25.000000000 +0100
+@@ -112,6 +112,11 @@
+ extern void CopyPixelToXftColor (Colormap cmap,
+ 				unsigned long pixel, XftColor *col);
+ #endif
++#ifdef TWM_USE_OPACITY	 /*opacity: 0 = transparent ... 255 = opaque*/
++extern Atom opacityAtom;
++extern void SetWindowOpacity (Window win, unsigned int opacity);
++extern void PropagateWindowOpacity (TwmWindow *tmp);
++#endif
+ 
+ extern int HotX, HotY;
+ 

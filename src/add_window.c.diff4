@@ -1,0 +1,14 @@
+--- add_window.c.orig4	2007-10-29 23:02:29.000000000 +0100
++++ add_window.c	2007-10-29 23:13:33.000000000 +0100
+@@ -818,7 +818,10 @@
+ 				    Scr->d_depth,
+ 				    (unsigned int) CopyFromParent,
+ 				    Scr->d_visual, valuemask, &attributes);
+-    
++#ifdef TWM_USE_OPACITY
++    PropagateWindowOpacity (tmp_win);
++#endif
++
+     if (tmp_win->title_height)
+     {
+ 	valuemask = (CWEventMask | CWBorderPixel | CWBackPixel);

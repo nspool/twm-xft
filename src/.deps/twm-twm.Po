@@ -1,0 +1,339 @@
+twm-twm.o: twm.c /usr/include/stdc-predef.h /usr/include/stdio.h \
+ /usr/include/bits/libc-header-start.h /usr/include/features.h \
+ /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
+ /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include/stddef.h \
+ /usr/include/bits/types.h /usr/include/bits/typesizes.h \
+ /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include/stdarg.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
+ /usr/include/bits/stdio.h /usr/include/signal.h \
+ /usr/include/bits/sigset.h /usr/include/bits/signum.h \
+ /usr/include/bits/types/struct_timespec.h /usr/include/bits/siginfo.h \
+ /usr/include/bits/sigaction.h /usr/include/bits/sigcontext.h \
+ /usr/include/bits/sigstack.h /usr/include/sys/ucontext.h \
+ /usr/include/bits/pthreadtypes.h /usr/include/bits/sigthread.h \
+ /usr/include/fcntl.h /usr/include/bits/fcntl.h \
+ /usr/include/bits/fcntl-linux.h /usr/include/bits/stat.h twm.h \
+ /opt/X11R7/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/bits/types/clock_t.h /usr/include/bits/types/clockid_t.h \
+ /usr/include/bits/types/time_t.h /usr/include/bits/types/timer_t.h \
+ /usr/include/endian.h /usr/include/bits/endian.h \
+ /usr/include/bits/byteswap.h /usr/include/bits/byteswap-16.h \
+ /usr/include/bits/uintn-identity.h /usr/include/sys/select.h \
+ /usr/include/bits/select.h /usr/include/bits/types/struct_timeval.h \
+ /usr/include/sys/sysmacros.h /usr/include/bits/sysmacros.h \
+ /opt/X11R7/include/X11/X.h /opt/X11R7/include/X11/Xfuncproto.h \
+ /opt/X11R7/include/X11/Xosdefs.h /opt/X11R7/include/X11/Xutil.h \
+ /opt/X11R7/include/X11/keysym.h /opt/X11R7/include/X11/keysymdef.h \
+ /opt/X11R7/include/X11/cursorfont.h \
+ /opt/X11R7/include/X11/extensions/shape.h \
+ /opt/X11R7/include/X11/extensions/shapeconst.h \
+ /opt/X11R7/include/X11/Xfuncs.h /usr/include/string.h \
+ /usr/include/xlocale.h /usr/include/bits/string.h \
+ /usr/include/bits/string2.h /usr/include/stdlib.h \
+ /opt/X11R7/include/X11/StringDefs.h /opt/X11R7/include/X11/Intrinsic.h \
+ /opt/X11R7/include/X11/Xresource.h /opt/X11R7/include/X11/Core.h \
+ /opt/X11R7/include/X11/Composite.h /opt/X11R7/include/X11/Constraint.h \
+ /opt/X11R7/include/X11/Object.h /opt/X11R7/include/X11/RectObj.h \
+ /opt/X11R7/include/X11/Xft/Xft.h /opt/X11R7/include/freetype2/ft2build.h \
+ /opt/X11R7/include/freetype2/freetype/config/ftheader.h \
+ /opt/X11R7/include/freetype2/freetype/freetype.h \
+ /opt/X11R7/include/freetype2/freetype/config/ftconfig.h \
+ /opt/X11R7/include/freetype2/freetype/config/ftoption.h \
+ /opt/X11R7/include/freetype2/freetype/config/ftstdlib.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include-fixed/limits.h \
+ /usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include-fixed/syslimits.h \
+ /usr/include/limits.h /usr/include/bits/posix1_lim.h \
+ /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
+ /usr/include/bits/posix2_lim.h /usr/include/bits/waitflags.h \
+ /usr/include/bits/waitstatus.h /usr/include/alloca.h \
+ /usr/include/bits/stdlib-bsearch.h /usr/include/bits/stdlib-float.h \
+ /usr/include/setjmp.h /usr/include/bits/setjmp.h \
+ /opt/X11R7/include/freetype2/freetype/fttypes.h \
+ /opt/X11R7/include/freetype2/freetype/ftsystem.h \
+ /opt/X11R7/include/freetype2/freetype/ftimage.h \
+ /opt/X11R7/include/freetype2/freetype/fterrors.h \
+ /opt/X11R7/include/freetype2/freetype/ftmoderr.h \
+ /opt/X11R7/include/freetype2/freetype/fterrdef.h \
+ /opt/X11R7/include/fontconfig/fontconfig.h /usr/include/sys/stat.h \
+ /opt/X11R7/include/X11/extensions/Xrender.h \
+ /opt/X11R7/include/X11/extensions/render.h \
+ /opt/X11R7/include/X11/Xdefs.h /opt/X11R7/include/X11/Xft/XftCompat.h \
+ iconmgr.h add_window.h gc.h parse.h list.h version.h menus.h events.h \
+ screen.h util.h gram.h session.h /opt/X11R7/include/X11/SM/SMlib.h \
+ /opt/X11R7/include/X11/SM/SM.h /opt/X11R7/include/X11/ICE/ICElib.h \
+ /opt/X11R7/include/X11/ICE/ICE.h /opt/X11R7/include/X11/Xproto.h \
+ /opt/X11R7/include/X11/Xmd.h /opt/X11R7/include/X11/Xprotostr.h \
+ /opt/X11R7/include/X11/Xatom.h /opt/X11R7/include/X11/Xmu/Error.h \
+ /opt/X11R7/include/X11/extensions/sync.h \
+ /opt/X11R7/include/X11/extensions/syncconst.h \
+ /opt/X11R7/include/X11/Xlocale.h /usr/include/locale.h \
+ /usr/include/bits/locale.h
+
+/usr/include/stdc-predef.h:
+
+/usr/include/stdio.h:
+
+/usr/include/bits/libc-header-start.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/bits/long-double.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include/stddef.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:
+
+/usr/include/bits/stdio.h:
+
+/usr/include/signal.h:
+
+/usr/include/bits/sigset.h:
+
+/usr/include/bits/signum.h:
+
+/usr/include/bits/types/struct_timespec.h:
+
+/usr/include/bits/siginfo.h:
+
+/usr/include/bits/sigaction.h:
+
+/usr/include/bits/sigcontext.h:
+
+/usr/include/bits/sigstack.h:
+
+/usr/include/sys/ucontext.h:
+
+/usr/include/bits/pthreadtypes.h:
+
+/usr/include/bits/sigthread.h:
+
+/usr/include/fcntl.h:
+
+/usr/include/bits/fcntl.h:
+
+/usr/include/bits/fcntl-linux.h:
+
+/usr/include/bits/stat.h:
+
+twm.h:
+
+/opt/X11R7/include/X11/Xlib.h:
+
+/usr/include/sys/types.h:
+
+/usr/include/bits/types/clock_t.h:
+
+/usr/include/bits/types/clockid_t.h:
+
+/usr/include/bits/types/time_t.h:
+
+/usr/include/bits/types/timer_t.h:
+
+/usr/include/endian.h:
+
+/usr/include/bits/endian.h:
+
+/usr/include/bits/byteswap.h:
+
+/usr/include/bits/byteswap-16.h:
+
+/usr/include/bits/uintn-identity.h:
+
+/usr/include/sys/select.h:
+
+/usr/include/bits/select.h:
+
+/usr/include/bits/types/struct_timeval.h:
+
+/usr/include/sys/sysmacros.h:
+
+/usr/include/bits/sysmacros.h:
+
+/opt/X11R7/include/X11/X.h:
+
+/opt/X11R7/include/X11/Xfuncproto.h:
+
+/opt/X11R7/include/X11/Xosdefs.h:
+
+/opt/X11R7/include/X11/Xutil.h:
+
+/opt/X11R7/include/X11/keysym.h:
+
+/opt/X11R7/include/X11/keysymdef.h:
+
+/opt/X11R7/include/X11/cursorfont.h:
+
+/opt/X11R7/include/X11/extensions/shape.h:
+
+/opt/X11R7/include/X11/extensions/shapeconst.h:
+
+/opt/X11R7/include/X11/Xfuncs.h:
+
+/usr/include/string.h:
+
+/usr/include/xlocale.h:
+
+/usr/include/bits/string.h:
+
+/usr/include/bits/string2.h:
+
+/usr/include/stdlib.h:
+
+/opt/X11R7/include/X11/StringDefs.h:
+
+/opt/X11R7/include/X11/Intrinsic.h:
+
+/opt/X11R7/include/X11/Xresource.h:
+
+/opt/X11R7/include/X11/Core.h:
+
+/opt/X11R7/include/X11/Composite.h:
+
+/opt/X11R7/include/X11/Constraint.h:
+
+/opt/X11R7/include/X11/Object.h:
+
+/opt/X11R7/include/X11/RectObj.h:
+
+/opt/X11R7/include/X11/Xft/Xft.h:
+
+/opt/X11R7/include/freetype2/ft2build.h:
+
+/opt/X11R7/include/freetype2/freetype/config/ftheader.h:
+
+/opt/X11R7/include/freetype2/freetype/freetype.h:
+
+/opt/X11R7/include/freetype2/freetype/config/ftconfig.h:
+
+/opt/X11R7/include/freetype2/freetype/config/ftoption.h:
+
+/opt/X11R7/include/freetype2/freetype/config/ftstdlib.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include-fixed/limits.h:
+
+/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.0/include-fixed/syslimits.h:
+
+/usr/include/limits.h:
+
+/usr/include/bits/posix1_lim.h:
+
+/usr/include/bits/local_lim.h:
+
+/usr/include/linux/limits.h:
+
+/usr/include/bits/posix2_lim.h:
+
+/usr/include/bits/waitflags.h:
+
+/usr/include/bits/waitstatus.h:
+
+/usr/include/alloca.h:
+
+/usr/include/bits/stdlib-bsearch.h:
+
+/usr/include/bits/stdlib-float.h:
+
+/usr/include/setjmp.h:
+
+/usr/include/bits/setjmp.h:
+
+/opt/X11R7/include/freetype2/freetype/fttypes.h:
+
+/opt/X11R7/include/freetype2/freetype/ftsystem.h:
+
+/opt/X11R7/include/freetype2/freetype/ftimage.h:
+
+/opt/X11R7/include/freetype2/freetype/fterrors.h:
+
+/opt/X11R7/include/freetype2/freetype/ftmoderr.h:
+
+/opt/X11R7/include/freetype2/freetype/fterrdef.h:
+
+/opt/X11R7/include/fontconfig/fontconfig.h:
+
+/usr/include/sys/stat.h:
+
+/opt/X11R7/include/X11/extensions/Xrender.h:
+
+/opt/X11R7/include/X11/extensions/render.h:
+
+/opt/X11R7/include/X11/Xdefs.h:
+
+/opt/X11R7/include/X11/Xft/XftCompat.h:
+
+iconmgr.h:
+
+add_window.h:
+
+gc.h:
+
+parse.h:
+
+list.h:
+
+version.h:
+
+menus.h:
+
+events.h:
+
+screen.h:
+
+util.h:
+
+gram.h:
+
+session.h:
+
+/opt/X11R7/include/X11/SM/SMlib.h:
+
+/opt/X11R7/include/X11/SM/SM.h:
+
+/opt/X11R7/include/X11/ICE/ICElib.h:
+
+/opt/X11R7/include/X11/ICE/ICE.h:
+
+/opt/X11R7/include/X11/Xproto.h:
+
+/opt/X11R7/include/X11/Xmd.h:
+
+/opt/X11R7/include/X11/Xprotostr.h:
+
+/opt/X11R7/include/X11/Xatom.h:
+
+/opt/X11R7/include/X11/Xmu/Error.h:
+
+/opt/X11R7/include/X11/extensions/sync.h:
+
+/opt/X11R7/include/X11/extensions/syncconst.h:
+
+/opt/X11R7/include/X11/Xlocale.h:
+
+/usr/include/locale.h:
+
+/usr/include/bits/locale.h:

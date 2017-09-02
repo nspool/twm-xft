@@ -1,0 +1,112 @@
+--- menus.c.orig2	2007-10-29 21:00:45.000000000 +0100
++++ menus.c	2007-10-29 21:17:14.000000000 +0100
+@@ -376,9 +376,17 @@
+ 	    XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 		mr->width, Scr->EntryHeight);
+ 
+-	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuHiC, mi->x,
+-		text_y, mi->item, mi->strlen);
++	    MyFont_DrawString(dpy, DRAW_WIN(mr,w),
++		&Scr->MenuFont, DRAW_COL(mi,MenuHiC),
++		mi->x, text_y, mi->item, mi->strlen);
+ 
++#ifdef TWM_USE_XFT
++	    /*
++	     * initialise NormalGC with color for XCopyPlane() later
++	     * ("non-TWM_USE_XFT" does it in MyFont_DrawString() already):
++	     */
++	    FB(mi->MenuHiC.fore, mi->MenuHiC.back);
++#endif
+ 	    gc = Scr->NormalGC;
+ 	}
+ 	else
+@@ -389,14 +397,17 @@
+ 
+ 		XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 		    mr->width, Scr->EntryHeight);
+-
++#ifdef TWM_USE_XFT
++		FB(mi->MenuC.fore, mi->MenuC.back);
++#endif
+ 		gc = Scr->NormalGC;
+ 	    }
+ 	    else
+ 		gc = Scr->MenuGC;
+ 
+-	    /* MyFont_DrawString() sets NormalGC: */
+-	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuC,
++	    /* if no TWM_USE_XFT defined, set NormalGC: */
++	    MyFont_DrawString(dpy, DRAW_WIN(mr,w),
++		&Scr->MenuFont, DRAW_COL(mi,MenuC),
+ 		mi->x, text_y, mi->item, mi->strlen);
+ 	}
+ 
+@@ -435,8 +446,9 @@
+ 	}
+ 
+ 	/* finally render the title */
+-	MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuC, mi->x,
+-	    text_y, mi->item, mi->strlen);
++	MyFont_DrawString(dpy, DRAW_WIN(mr,w),
++	    &Scr->MenuFont, DRAW_COL(mi,MenuC),
++	    mi->x, text_y, mi->item, mi->strlen);
+     }
+ }
+     
+@@ -827,7 +839,10 @@
+ 			       CopyFromParent, (unsigned int) CopyFromParent,
+ 			       (Visual *) CopyFromParent,
+ 			       valuemask, &attributes);
+-
++#ifdef TWM_USE_XFT
++	mr->xft_w = XftDrawCreate (dpy, mr->w, Scr->d_visual,
++				XDefaultColormap (dpy, Scr->screen));
++#endif
+ 
+ 	XSaveContext(dpy, mr->w, MenuContext, (caddr_t)mr);
+ 	XSaveContext(dpy, mr->w, ScreenContext, (caddr_t)Scr);
+@@ -855,6 +870,12 @@
+ 	    tmp->MenuHiC.fore = tmp->MenuC.back;
+ 	    tmp->MenuHiC.back = tmp->MenuC.fore;
+ 	}
++#ifdef TWM_USE_XFT
++	CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++			    tmp->MenuC.fore, &tmp->xft_MenuC);
++	CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++			    tmp->MenuHiC.fore, &tmp->xft_MenuHiC);
++#endif
+     }
+ 
+     if (Scr->Monochrome == MONOCHROME || !Scr->InterpolateMenuColors)
+@@ -927,6 +948,12 @@
+ 
+ 	    f3 = save_fore;
+ 	    b3 = save_back;
++#ifdef TWM_USE_XFT
++	    CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++				cur->MenuC.fore, &cur->xft_MenuC);
++	    CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++				cur->MenuHiC.fore, &cur->xft_MenuHiC);
++#endif
+ 	}
+ 	start = end;
+     }
+@@ -1176,7 +1203,7 @@
+     MyFont_TextWidth(&Scr->SizeFont, ": ", 2);
+   XResizeWindow (dpy, Scr->SizeWindow, Scr->SizeStringOffset +
+ 		 Scr->SizeStringWidth, height);
+-  MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont, Scr->NormalGC,
++  MyFont_DrawImageString (dpy, DRAW_WIN(Scr,SizeWindow), &Scr->SizeFont, DRAW_COL(Scr,DefaultC),
+ 		    width, SIZE_VINDENT + Scr->SizeFont.ascent,
+ 		    ": ", 2);
+ #endif
+@@ -2805,6 +2832,9 @@
+ 	XDeleteContext (dpy, menu->w, MenuContext);
+ 	XDeleteContext (dpy, menu->w, ScreenContext);
+ 	if (Scr->Shadow) XDestroyWindow (dpy, menu->shadow);
++#ifdef TWM_USE_XFT
++	XftDrawDestroy(menu->xft_w);
++#endif
+ 	XDestroyWindow(dpy, menu->w);
+     }
+ 

@@ -1,0 +1,144 @@
+--- util.c.orig5	2007-11-05 20:09:41.000000000 +0100
++++ util.c	2007-11-05 20:12:21.000000000 +0100
+@@ -862,7 +862,7 @@
+ 	printf ("Focusing on window \"%s\"\n", tmp_win->full_name);
+     } else {
+ 	printf ("Unfocusing; Scr->Focus was \"%s\"\n",
+-		Scr->Focus ? Scr->Focus->full_name : "(nil)");
++		Scr && Scr->Focus ? Scr->Focus->full_name : "(nil)");
+     }
+ #endif
+ 
+@@ -1077,13 +1077,19 @@
+ static Pixmap 
+ CreateMenuPixmap (unsigned *widthp, unsigned *heightp)
+ {
+-    return CreateMenuIcon (Scr->TBInfo.width - Scr->TBInfo.border * 2,
+-			   widthp,heightp);
++    if (Scr->tbpm.menu == None)
++	Scr->tbpm.menu = CreateMenuIcon (Scr->TBInfo.width - Scr->TBInfo.border * 2,
++					widthp, heightp);
++    return Scr->tbpm.menu;
+ }
+ 
+ Pixmap 
+ CreateMenuIcon (int height, unsigned *widthp, unsigned *heightp)
+ {
++    /*
++     *  Client window title bar icons and pull-right submenu icons
++     *  (may have differing sizes).
++     */
+     int h, w;
+     int ih, iw;
+     int	ix, iy;
+@@ -1094,6 +1100,8 @@
+     int	lines, dly;
+     int off;
+     int	bw;
++    Pixmap pix;
++    GC  gc;
+ 
+     h = height;
+     w = h * 7 / 8;
+@@ -1103,56 +1111,53 @@
+ 	w = 1;
+     *widthp = w;
+     *heightp = h;
+-    if (Scr->tbpm.menu == None) {
+-	Pixmap  pix;
+-	GC	gc;
+ 
+-	pix = Scr->tbpm.menu = XCreatePixmap (dpy, Scr->Root, w, h, 1);
+-	gc = XCreateGC (dpy, pix, 0L, NULL);
+-	XSetForeground (dpy, gc, 0L);
+-	XFillRectangle (dpy, pix, gc, 0, 0, w, h);
+-	XSetForeground (dpy, gc, 1L);
+-	ix = 1;
+-	iy = 1;
+-	ih = h - iy * 2;
+-	iw = w - ix * 2;
+-	off = ih / 8;
+-	mh = ih - off;
+-	mw = iw - off;
+-	bw = mh / 16;
+-	if (bw == 0 && mw > 2)
+-	    bw = 1;
+-	tw = mw - bw * 2;
+-	th = mh - bw * 2;
+-	XFillRectangle (dpy, pix, gc, ix, iy, mw, mh);
+-	XFillRectangle (dpy, pix, gc, ix + iw - mw, iy + ih - mh, mw, mh);
+-	XSetForeground (dpy, gc, 0L);
+-	XFillRectangle (dpy, pix, gc, ix+bw, iy+bw, tw, th);
+-	XSetForeground (dpy, gc, 1L);
+-	lw = tw / 2;
+-	if ((tw & 1) ^ (lw & 1))
+-	    lw++;
+-	lx = ix + bw + (tw - lw) / 2;
+-
+-	lh = th / 2 - bw;
+-	if ((lh & 1) ^ ((th - bw) & 1))
+-	    lh++;
+-	ly = iy + bw + (th - bw - lh) / 2;
+-
+-	lines = 3;
+-	if ((lh & 1) && lh < 6)
+-	{
+-	    lines--;
+-	}
+-	dly = lh / (lines - 1);
+-	while (lines--)
+-	{
+-	    XFillRectangle (dpy, pix, gc, lx, ly, lw, bw);
+-	    ly += dly;
+-	}
+-	XFreeGC (dpy, gc);
++    pix = XCreatePixmap (dpy, Scr->Root, w, h, 1);
++    gc = XCreateGC (dpy, pix, 0L, NULL);
++    XSetForeground (dpy, gc, 0L);
++    XFillRectangle (dpy, pix, gc, 0, 0, w, h);
++    XSetForeground (dpy, gc, 1L);
++    ix = 1;
++    iy = 1;
++    ih = h - iy * 2;
++    iw = w - ix * 2;
++    off = ih / 8;
++    mh = ih - off;
++    mw = iw - off;
++    bw = mh / 16;
++    if (bw == 0 && mw > 2)
++	bw = 1;
++    tw = mw - bw * 2;
++    th = mh - bw * 2;
++    XFillRectangle (dpy, pix, gc, ix, iy, mw, mh);
++    XFillRectangle (dpy, pix, gc, ix + iw - mw, iy + ih - mh, mw, mh);
++    XSetForeground (dpy, gc, 0L);
++    XFillRectangle (dpy, pix, gc, ix+bw, iy+bw, tw, th);
++    XSetForeground (dpy, gc, 1L);
++    lw = tw / 2;
++    if ((tw & 1) ^ (lw & 1))
++	lw++;
++    lx = ix + bw + (tw - lw) / 2;
++
++    lh = th / 2 - bw;
++    if ((lh & 1) ^ ((th - bw) & 1))
++	lh++;
++    ly = iy + bw + (th - bw - lh) / 2;
++
++    lines = 3;
++    if ((lh & 1) && lh < 6)
++    {
++	lines--;
+     }
+-    return Scr->tbpm.menu;
++    dly = lh / (lines - 1);
++    while (lines--)
++    {
++	XFillRectangle (dpy, pix, gc, lx, ly, lw, bw);
++	ly += dly;
++    }
++    XFreeGC (dpy, gc);
++
++    return pix;
+ }
+ 
+ void

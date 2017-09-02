@@ -1,0 +1,51 @@
+--- iconmgr.c.orig3	2007-10-29 21:51:45.000000000 +0100
++++ iconmgr.c	2007-10-29 22:03:40.000000000 +0100
+@@ -392,7 +392,14 @@
+     GetColorFromList(Scr->IconManagerHighlightL, tmp_win->full_name,
+ 	&tmp_win->class, &tmp->highlight);
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    if (ip->columns > 1)
++	h = 144*Scr->IconManagerFont.height/100; /*multicolumn baselineskip*/
++    else
++	h = 120*Scr->IconManagerFont.height/100; /*singlecolumn baselineskip*/
++#else
+     h = Scr->IconManagerFont.height + 10;
++#endif
+     if (h < (siconify_height + 4))
+ 	h = siconify_height + 4;
+ 
+@@ -426,7 +433,18 @@
+     attributes.event_mask = (ButtonReleaseMask| ButtonPressMask |
+ 			     ExposureMask);
+     attributes.cursor = Scr->ButtonCursor;
++#ifdef TWM_USE_XFT /*spacing*/
++    tmp->icon = XCreateWindow (dpy, tmp->w, 5,
++#if 0			       /* "iconified" icon vertically centered: */
++			       (int) (h - siconify_height)/2,
++#else			       /* "iconified" icon text baseline-aligned: */
++			       (int) (Scr->IconManagerFont.y
++					+ (h - Scr->IconManagerFont.height)/2
++					- siconify_height),
++#endif
++#else
+     tmp->icon = XCreateWindow (dpy, tmp->w, 5, (int) (h - siconify_height)/2,
++#endif
+ 			       (unsigned int) siconify_width,
+ 			       (unsigned int) siconify_height,
+ 			       (unsigned int) 0, CopyFromParent,
+@@ -641,7 +659,14 @@
+     int savewidth;
+     WList *tmp;
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    if (ip->columns > 1)
++	wheight = 144*Scr->IconManagerFont.height/100; /*multicolumn*/
++    else
++	wheight = 120*Scr->IconManagerFont.height/100; /*singlecolumn*/
++#else
+     wheight = Scr->IconManagerFont.height + 10;
++#endif
+     if (wheight < (siconify_height + 4))
+ 	wheight = siconify_height + 4;
+ 

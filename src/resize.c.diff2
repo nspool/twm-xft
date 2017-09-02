@@ -1,0 +1,13 @@
+--- resize.c.orig2	2007-09-18 10:35:49.000000000 +0200
++++ resize.c	2007-09-23 12:51:18.000000000 +0200
+@@ -516,8 +516,8 @@
+ 
+     (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
+     XRaiseWindow(dpy, Scr->SizeWindow);
+-    MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont, 
+-			    &Scr->DefaultC, Scr->SizeStringOffset,
++    MyFont_DrawImageString (dpy, DRAW_WIN(Scr,SizeWindow), &Scr->SizeFont,
++			    DRAW_COL(Scr,DefaultC), Scr->SizeStringOffset,
+ 			    Scr->SizeFont.ascent + SIZE_VINDENT,
+ 			    str, 13);
+ }

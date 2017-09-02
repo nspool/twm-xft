@@ -1,0 +1,13 @@
+--- icons.c.orig2	2007-09-18 10:37:05.000000000 +0200
++++ icons.c	2007-09-18 12:24:36.000000000 +0200
+@@ -524,6 +524,10 @@
+ 	    tmp_win->icon_w_width, tmp_win->icon_w_height,
+ 	    Scr->IconBorderWidth, tmp_win->IconBorderColor, tmp_win->IconC.back);
+ 	event_mask = ExposureMask;
++#ifdef TWM_USE_XFT
++	tmp_win->xft_icon_w = XftDrawCreate (dpy, tmp_win->icon_w, Scr->d_visual,
++					XDefaultColormap (dpy, Scr->screen));
++#endif
+     }
+ 
+     XSelectInput (dpy, tmp_win->icon_w,

@@ -1,0 +1,23 @@
+--- menus.h.orig2	2007-09-18 12:01:29.000000000 +0200
++++ menus.h	2007-09-18 12:02:59.000000000 +0200
+@@ -79,6 +79,10 @@
+     char *action;		/* action to be performed */
+     ColorPair MenuC;		/* menuitem nonhighlight foreground/background */
+     ColorPair MenuHiC;		/* menuitem highlight foreground/background */
++#ifdef TWM_USE_XFT
++    XftColor xft_MenuC;		/* menuitem nonhighlight text color */
++    XftColor xft_MenuHiC;	/* menuitem highlight text color */
++#endif
+     short item_num;		/* item number of this menu */
+     short x;			/* x coordinate for text */
+     short func;			/* twm built in function */
+@@ -96,6 +100,9 @@
+     char *name;			/* name of root */
+     Window w;			/* the window of the menu */
+     Window shadow;		/* the shadow window */
++#ifdef TWM_USE_XFT
++    XftDraw *xft_w;		/* menu window Xft draw context */
++#endif
+     ColorPair MenuHiC;		/* highlight foreground/background */
+     short mapped;		/* NEVER_MAPPED, UNMAPPED, or MAPPED */
+     short height;		/* height of the menu */

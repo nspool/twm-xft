@@ -1,0 +1,50 @@
+--- add_window.c.orig2	2007-09-18 10:40:06.000000000 +0200
++++ add_window.c	2007-09-23 12:50:37.000000000 +0200
+@@ -486,8 +486,8 @@
+ 	    XMapRaised(dpy, Scr->SizeWindow);
+ 	    InstallRootColormap();
+ 
+-	    MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont,
+-				    &Scr->DefaultC,
++	    MyFont_DrawImageString (dpy, DRAW_WIN(Scr,SizeWindow),
++				    &Scr->SizeFont, DRAW_COL(Scr,DefaultC),
+ 				    SIZE_HINDENT,
+ 				    SIZE_VINDENT + Scr->SizeFont.ascent,
+ 				    tmp_win->name, namelen);
+@@ -588,9 +588,9 @@
+ 		  MyFont_TextWidth(&Scr->SizeFont, ": ", 2);
+ 		XResizeWindow (dpy, Scr->SizeWindow, Scr->SizeStringOffset +
+ 			       Scr->SizeStringWidth, height);
+-		MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont,
+-				  &Scr->DefaultC, width,
+-				  SIZE_VINDENT + Scr->SizeFont.ascent,
++		MyFont_DrawImageString (dpy, DRAW_WIN(Scr,SizeWindow),
++				  &Scr->SizeFont, DRAW_COL(Scr,DefaultC),
++				  width, SIZE_VINDENT + Scr->SizeFont.ascent,
+ 				  ": ", 2);
+ 		if (0/*Scr->AutoRelativeResize*/) {
+ 		    int dx = (tmp_win->attr.width / 4);
+@@ -783,6 +783,12 @@
+     GetColorFromList(Scr->IconBackgroundL, tmp_win->full_name, &tmp_win->class,
+ 	&tmp_win->IconC.back);
+ 
++#ifdef TWM_USE_XFT
++    CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++			tmp_win->TitleC.fore, &tmp_win->xft_TitleC);
++    CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++			tmp_win->IconC.fore, &tmp_win->xft_IconC);
++#endif
+ 
+     /* create windows */
+ 
+@@ -830,6 +836,10 @@
+ 					  (unsigned int) CopyFromParent,
+ 					  Scr->d_visual, valuemask,
+ 					  &attributes);
++#ifdef TWM_USE_XFT
++	tmp_win->xft_title_w = XftDrawCreate (dpy, tmp_win->title_w, Scr->d_visual,
++					  XDefaultColormap (dpy, Scr->screen));
++#endif
+     }
+     else {
+ 	tmp_win->title_w = 0;

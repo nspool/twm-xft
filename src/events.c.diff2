@@ -1,0 +1,83 @@
+--- events.c.orig2	2007-10-29 21:00:45.000000000 +0100
++++ events.c	2007-10-29 21:08:35.000000000 +0100
+@@ -845,7 +845,14 @@
+ 		    if (Tmp_win->icon_w != Tmp_win->wmhints->icon_window)
+ 			XUnmapWindow(dpy, Tmp_win->icon_w);
+ 		} else
++#ifdef TWM_USE_XFT
++		{
++		    XftDrawDestroy(Tmp_win->xft_icon_w);
++#endif
+ 		    XDestroyWindow(dpy, Tmp_win->icon_w);
++#ifdef TWM_USE_XFT
++		}
++#endif
+ 
+ 		XDeleteContext(dpy, Tmp_win->icon_w, TwmContext);
+ 		XDeleteContext(dpy, Tmp_win->icon_w, ScreenContext);
+@@ -1040,9 +1047,9 @@
+ 	height = Scr->DefaultFont.height+2;
+ 	for (i = 0; i < InfoLines; i++)
+ 	{
+-	    MyFont_DrawString(dpy, Scr->InfoWindow, &Scr->DefaultFont, 
+-		&Scr->DefaultC, 5, (i*height) + Scr->DefaultFont.y, Info[i], 
+-		strlen(Info[i]));
++	    MyFont_DrawString(dpy, DRAW_WIN(Scr,InfoWindow),
++		&Scr->DefaultFont, DRAW_COL(Scr,DefaultC),
++		5, (i*height) + Scr->DefaultFont.y, Info[i], strlen(Info[i]));
+ 	}
+ 	flush_expose (Event.xany.window);
+     } 
+@@ -1050,15 +1057,17 @@
+     {
+ 	if (Event.xany.window == Tmp_win->title_w)
+ 	{
+-	    MyFont_DrawString (dpy, Tmp_win->title_w, &Scr->TitleBarFont,
+-		&Tmp_win->TitleC, Scr->TBInfo.titlex, Scr->TitleBarFont.y, 
++	    MyFont_DrawString (dpy, DRAW_WIN(Tmp_win,title_w),
++		&Scr->TitleBarFont, DRAW_COL(Tmp_win,TitleC),
++		Scr->TBInfo.titlex, Scr->TitleBarFont.y, 
+ 		Tmp_win->name, strlen(Tmp_win->name));
+ 	    flush_expose (Event.xany.window);
+ 	}
+ 	else if (Event.xany.window == Tmp_win->icon_w)
+ 	{
+-	    MyFont_DrawString (dpy, Tmp_win->icon_w, &Scr->IconFont,
+-		&Tmp_win->IconC, Tmp_win->icon_x, Tmp_win->icon_y,
++	    MyFont_DrawString (dpy, DRAW_WIN(Tmp_win,icon_w),
++		&Scr->IconFont, DRAW_COL(Tmp_win,IconC),
++		Tmp_win->icon_x, Tmp_win->icon_y,
+ 		Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 	    flush_expose (Event.xany.window);
+ 	    return;
+@@ -1084,8 +1093,8 @@
+ 	if (Tmp_win->list) {
+ 	    if (Event.xany.window == Tmp_win->list->w)
+ 	    {
+-		MyFont_DrawString (dpy, Event.xany.window,
+-		    &Scr->IconManagerFont, &Tmp_win->list->IconManagerC,
++		MyFont_DrawString (dpy, DRAW_WIN(Tmp_win->list,w),
++		    &Scr->IconManagerFont, DRAW_COL(Tmp_win->list,IconManagerC),
+ 		    iconmgr_textx, Scr->IconManagerFont.y+4,
+ 		    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 		DrawIconManagerBorder(Tmp_win->list);
+@@ -1180,6 +1189,9 @@
+ 				ScreenContext);
+ 	    }
+         }
++#ifdef TWM_USE_XFT
++	XftDrawDestroy (Tmp_win->xft_title_w);
++#endif
+     }
+ 
+     if (Scr->cmapInfo.cmaps == &Tmp_win->cmaps)
+@@ -1204,6 +1216,9 @@
+ 
+     XDestroyWindow(dpy, Tmp_win->frame);
+     if (Tmp_win->icon_w && !Tmp_win->icon_not_ours) {
++#ifdef TWM_USE_XFT
++	XftDrawDestroy(Tmp_win->xft_icon_w);
++#endif
+ 	XDestroyWindow(dpy, Tmp_win->icon_w);
+ 	IconDown (Tmp_win);
+     }

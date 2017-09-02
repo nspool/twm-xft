@@ -1,0 +1,33 @@
+--- events.c.orig4	2007-10-29 22:56:24.000000000 +0100
++++ events.c	2007-10-29 23:11:40.000000000 +0100
+@@ -925,6 +925,18 @@
+ 	    FetchWmProtocols (Tmp_win);
+ 	    break;
+ 	}
++#ifdef TWM_USE_OPACITY
++	else if ((Event.xproperty.atom == opacityAtom)
++			&& Event.xproperty.window == Tmp_win->w)
++	    switch (Event.xproperty.state) {
++	    case PropertyNewValue:
++		PropagateWindowOpacity (Tmp_win);
++		break;
++	    case PropertyDelete:
++		XDeleteProperty (dpy, Tmp_win->frame, opacityAtom);
++		break;
++	    }
++#endif
+ 	break;
+     }
+ }
+@@ -1305,6 +1317,11 @@
+ 	Tmp_win = AddWindow(Event.xany.window, FALSE, (IconMgr *) NULL);
+ 	if (Tmp_win == NULL)
+ 	    return;
++
++#if defined TWM_USE_OPACITY  &&  0  /* "transient" windows get MenuOpacity */
++	if (Tmp_win->transient)
++	    SetWindowOpacity (Tmp_win->frame, Scr->MenuOpacity);
++#endif
+     }
+     else
+     {

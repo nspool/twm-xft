@@ -1,0 +1,61 @@
+--- twm.c.orig2	2006-11-30 18:54:59.000000000 +0100
++++ twm.c	2007-11-05 14:18:05.000000000 +0100
+@@ -152,7 +152,7 @@
+ 
+ Atom TwmAtoms[11];
+ 
+-Bool use_fontset;		/* use XFontSet-related functions or not */
++Bool use_fontset;		/* (I18N, utf8) use XFontSet-related functions or not */
+ 
+ /* don't change the order of these strings */
+ static char* atom_names[11] = {
+@@ -660,6 +660,15 @@
+ 					 (Visual *) CopyFromParent,
+ 					 valuemask, &attributes);
+ 
++#ifdef TWM_USE_XFT
++	Scr->xft_InfoWindow = XftDrawCreate (dpy, Scr->InfoWindow, Scr->d_visual,
++					 XDefaultColormap (dpy, Scr->screen));
++	Scr->xft_SizeWindow = XftDrawCreate (dpy, Scr->SizeWindow, Scr->d_visual,
++					 XDefaultColormap (dpy, Scr->screen));
++	CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
++					 Scr->DefaultC.fore, &Scr->xft_DefaultC);
++#endif
++
+ 	XUngrabServer(dpy);
+ 
+ 	FirstScreen = FALSE;
+@@ -813,25 +822,26 @@
+ #define DEFAULT_NICE_FONT "variable"
+ #define DEFAULT_FAST_FONT "fixed"
+ 
+-    Scr->TitleBarFont.font = NULL;
++#ifndef TWM_USE_XFT
+     Scr->TitleBarFont.fontset = NULL;
++    Scr->MenuFont.fontset = NULL;
++    Scr->IconFont.fontset = NULL;
++    Scr->SizeFont.fontset = NULL;
++    Scr->IconManagerFont.fontset = NULL;
++    Scr->DefaultFont.fontset = NULL;
++#endif
++    Scr->TitleBarFont.font = NULL;
+     Scr->TitleBarFont.name = DEFAULT_NICE_FONT;
+     Scr->MenuFont.font = NULL;
+-    Scr->MenuFont.fontset = NULL;
+     Scr->MenuFont.name = DEFAULT_NICE_FONT;
+     Scr->IconFont.font = NULL;
+-    Scr->IconFont.fontset = NULL;
+     Scr->IconFont.name = DEFAULT_NICE_FONT;
+     Scr->SizeFont.font = NULL;
+-    Scr->SizeFont.fontset = NULL;
+     Scr->SizeFont.name = DEFAULT_FAST_FONT;
+     Scr->IconManagerFont.font = NULL;
+-    Scr->IconManagerFont.fontset = NULL;
+     Scr->IconManagerFont.name = DEFAULT_NICE_FONT;
+     Scr->DefaultFont.font = NULL;
+-    Scr->DefaultFont.fontset = NULL;
+     Scr->DefaultFont.name = DEFAULT_FAST_FONT;
+-
+ }
+ 
+ void

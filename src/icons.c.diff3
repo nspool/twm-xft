@@ -1,0 +1,36 @@
+--- icons.c.orig3	2007-10-29 21:51:57.000000000 +0100
++++ icons.c	2007-10-29 22:50:43.000000000 +0100
+@@ -480,7 +480,11 @@
+     tmp_win->icon_w_width = MyFont_TextWidth(&Scr->IconFont,
+ 	tmp_win->icon_name, strlen(tmp_win->icon_name));
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    tmp_win->icon_w_width += Scr->IconFont.height; /*approx. '1ex' on both sides*/
++#else
+     tmp_win->icon_w_width += 6;
++#endif
+     if (tmp_win->icon_w_width < tmp_win->icon_width)
+     {
+ 	tmp_win->icon_x = (tmp_win->icon_width - tmp_win->icon_w_width)/2;
+@@ -489,10 +493,21 @@
+     }
+     else
+     {
++#ifdef TWM_USE_XFT /*spacing*/
++	tmp_win->icon_x = Scr->IconFont.height/2;
++#else
+ 	tmp_win->icon_x = 3;
++#endif
+     }
++
++#ifdef TWM_USE_XFT /*spacing*/
++    /* icon label height := 1.44 times font height: */
++    tmp_win->icon_w_height = tmp_win->icon_height + 144*Scr->IconFont.height/100;
++    tmp_win->icon_y = tmp_win->icon_height + Scr->IconFont.y + 44*Scr->IconFont.height/200;
++#else
+     tmp_win->icon_y = tmp_win->icon_height + Scr->IconFont.height;
+     tmp_win->icon_w_height = tmp_win->icon_height + Scr->IconFont.height + 4;
++#endif
+ 
+     event_mask = 0;
+     if (tmp_win->wmhints && tmp_win->wmhints->flags & IconWindowHint)

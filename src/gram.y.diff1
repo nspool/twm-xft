@@ -1,0 +1,13 @@
+--- gram.y.orig1	2007-09-15 19:08:28.000000000 +0200
++++ gram.y	2007-09-18 12:53:42.000000000 +0200
+@@ -765,8 +765,8 @@
+ 
+ 	save = Scr->FirstTime;
+ 	Scr->FirstTime = TRUE;
+-	GetColor(COLOR, &tmp->hi_fore, fore);
+-	GetColor(COLOR, &tmp->hi_back, back);
++	GetColor(COLOR, &tmp->MenuHiC.fore, fore);
++	GetColor(COLOR, &tmp->MenuHiC.back, back);
+ 	Scr->FirstTime = save;
+     }
+ 

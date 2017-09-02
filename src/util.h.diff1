@@ -1,0 +1,19 @@
+--- util.h.orig1	2007-09-15 19:07:17.000000000 +0200
++++ util.h	2007-09-15 19:52:47.000000000 +0200
+@@ -81,12 +81,11 @@
+ extern void GetFont ( MyFont *font );
+ extern int MyFont_TextWidth( MyFont *font, char *string, int len);
+ extern void MyFont_DrawImageString( Display *dpy, Drawable d, MyFont *font, 
+-				    GC gc, int x, int y, char * string, 
+-				    int len);
++				    ColorPair *col,
++				    int x, int y, char * string, int len);
+ extern void MyFont_DrawString( Display *dpy, Drawable d, MyFont *font, 
+-			       GC gc, int x, int y, char * string, int len);
+-extern void MyFont_ChangeGC( unsigned long fix_fore, unsigned long fix_back, 
+-			     MyFont *fix_font);
++			       ColorPair *col,
++			       int x, int y, char * string, int len);
+ extern Status I18N_FetchName( Display *dpy, Window win, char **winname);
+ extern Status I18N_GetIconName( Display *dpy, Window win, char **iconname);
+ extern void SetFocus ( TwmWindow *tmp_win, Time time );

@@ -1,0 +1,166 @@
+--- menus.c.orig1	2007-09-15 19:07:58.000000000 +0200
++++ menus.c	2007-09-18 16:33:15.000000000 +0200
+@@ -371,14 +371,12 @@
+ 
+ 	if (mi->state)
+ 	{
+-	    XSetForeground(dpy, Scr->NormalGC, mi->hi_back);
++	    XSetForeground(dpy, Scr->NormalGC, mi->MenuHiC.back);
+ 
+ 	    XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 		mr->width, Scr->EntryHeight);
+ 
+-	    MyFont_ChangeGC(mi->hi_fore, mi->hi_back, &Scr->MenuFont);
+-
+-	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, Scr->NormalGC, mi->x,
++	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuHiC, mi->x,
+ 		text_y, mi->item, mi->strlen);
+ 
+ 	    gc = Scr->NormalGC;
+@@ -387,20 +385,19 @@
+ 	{
+ 	    if (mi->user_colors || !exposure)
+ 	    {
+-		XSetForeground(dpy, Scr->NormalGC, mi->back);
++		XSetForeground(dpy, Scr->NormalGC, mi->MenuC.back);
+ 
+ 		XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 		    mr->width, Scr->EntryHeight);
+ 
+-		MyFont_ChangeGC(mi->fore, mi->back, &Scr->MenuFont);
+ 		gc = Scr->NormalGC;
+ 	    }
+ 	    else
+ 		gc = Scr->MenuGC;
+ 
+-	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, gc, 
+-		    mi->x, text_y, mi->item, mi->strlen);
+-
++	    /* MyFont_DrawString() sets NormalGC: */
++	    MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuC,
++		mi->x, text_y, mi->item, mi->strlen);
+ 	}
+ 
+ 	if (mi->func == F_MENU)
+@@ -421,14 +418,14 @@
+     {
+ 	int y;
+ 
+-	XSetForeground(dpy, Scr->NormalGC, mi->back);
++	XSetForeground(dpy, Scr->NormalGC, mi->MenuC.back);
+ 
+ 	/* fill the rectangle with the title background color */
+ 	XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 	    mr->width, Scr->EntryHeight);
+ 
+ 	{
+-	    XSetForeground(dpy, Scr->NormalGC, mi->fore);
++	    XSetForeground(dpy, Scr->NormalGC, mi->MenuC.fore);
+ 	    /* now draw the dividing lines */
+ 	    if (y_offset)
+ 	      XDrawLine (dpy, mr->w, Scr->NormalGC, 0, y_offset,
+@@ -437,9 +434,8 @@
+ 	    XDrawLine(dpy, mr->w, Scr->NormalGC, 0, y, mr->width, y);
+ 	}
+ 
+-	MyFont_ChangeGC(mi->fore, mi->back, &Scr->MenuFont);
+ 	/* finally render the title */
+-	MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, Scr->NormalGC, mi->x,
++	MyFont_DrawString(dpy, mr->w, &Scr->MenuFont, &mi->MenuC, mi->x,
+ 	    text_y, mi->item, mi->strlen);
+     }
+ }
+@@ -618,8 +614,8 @@
+ #define UNUSED_PIXEL ((unsigned long) (~0))	/* more than 24 bits */
+ 
+     tmp = (MenuRoot *) malloc(sizeof(MenuRoot));
+-    tmp->hi_fore = UNUSED_PIXEL;
+-    tmp->hi_back = UNUSED_PIXEL;
++    tmp->MenuHiC.fore = UNUSED_PIXEL;
++    tmp->MenuHiC.back = UNUSED_PIXEL;
+     tmp->name = name;
+     tmp->prev = NULL;
+     tmp->first = NULL;
+@@ -718,8 +714,8 @@
+ 
+ 	save = Scr->FirstTime;
+ 	Scr->FirstTime = TRUE;
+-	GetColor(COLOR, &tmp->fore, fore);
+-	GetColor(COLOR, &tmp->back, back);
++	GetColor(COLOR, &tmp->MenuC.fore, fore);
++	GetColor(COLOR, &tmp->MenuC.back, back);
+ 	Scr->FirstTime = save;
+ 	tmp->user_colors = TRUE;
+     }
+@@ -844,23 +840,20 @@
+     {
+ 	if (!tmp->user_colors) {
+ 	    if (tmp->func != F_TITLE) {
+-		tmp->fore = Scr->MenuC.fore;
+-		tmp->back = Scr->MenuC.back;
++		tmp->MenuC = Scr->MenuC; /* menuitem default color */
+ 	    } else {
+-		tmp->fore = Scr->MenuTitleC.fore;
+-		tmp->back = Scr->MenuTitleC.back;
++		tmp->MenuC = Scr->MenuTitleC;
+ 	    }
+ 	}
+ 
+-	if (mr->hi_fore != UNUSED_PIXEL)
++	if (mr->MenuHiC.fore != UNUSED_PIXEL)
+ 	{
+-	    tmp->hi_fore = mr->hi_fore;
+-	    tmp->hi_back = mr->hi_back;
++	    tmp->MenuHiC = mr->MenuHiC;
+ 	}
+ 	else
+ 	{
+-	    tmp->hi_fore = tmp->back;
+-	    tmp->hi_back = tmp->fore;
++	    tmp->MenuHiC.fore = tmp->MenuC.back;
++	    tmp->MenuHiC.back = tmp->MenuC.fore;
+ 	}
+     }
+ 
+@@ -889,14 +882,14 @@
+ 	/* we have a start and end to interpolate between */
+ 	num = end->item_num - start->item_num;
+ 
+-	f1.pixel = start->fore;
++	f1.pixel = start->MenuC.fore;
+ 	XQueryColor(dpy, cmap, &f1);
+-	f2.pixel = end->fore;
++	f2.pixel = end->MenuC.fore;
+ 	XQueryColor(dpy, cmap, &f2);
+ 
+-	b1.pixel = start->back;
++	b1.pixel = start->MenuC.back;
+ 	XQueryColor(dpy, cmap, &b1);
+-	b2.pixel = end->back;
++	b2.pixel = end->MenuC.back;
+ 	XQueryColor(dpy, cmap, &b2);
+ 
+ 	fred = ((int)f2.red - (int)f1.red) / num;
+@@ -928,8 +921,8 @@
+ 
+ 	    XAllocColor(dpy, cmap, &f3);
+ 	    XAllocColor(dpy, cmap, &b3);
+-	    cur->hi_back = cur->fore = f3.pixel;
+-	    cur->hi_fore = cur->back = b3.pixel;
++	    cur->MenuHiC.back = cur->MenuC.fore = f3.pixel;
++	    cur->MenuHiC.fore = cur->MenuC.back = b3.pixel;
+ 	    cur->user_colors = True;
+ 
+ 	    f3 = save_fore;
+@@ -2791,9 +2784,9 @@
+ {
+     if (tmp->highlight) {
+ 	if (onoroff) {
+-	    XSetWindowBorder (dpy, tmp->frame, tmp->border);
++	    XSetWindowBorder (dpy, tmp->frame, tmp->BorderColor);
+ 	    if (tmp->title_w) 
+-	      XSetWindowBorder (dpy, tmp->title_w, tmp->border);
++	      XSetWindowBorder (dpy, tmp->title_w, tmp->BorderColor);
+ 	} else {
+ 	    XSetWindowBorderPixmap (dpy, tmp->frame, tmp->gray);
+ 	    if (tmp->title_w) 

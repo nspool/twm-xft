@@ -1,0 +1,15 @@
+--- screen.h.orig2	2007-09-18 10:35:32.000000000 +0200
++++ screen.h	2007-09-18 11:14:55.000000000 +0200
+@@ -79,6 +79,12 @@
+     Window SizeWindow;		/* the resize dimensions window */
+     Window InfoWindow;		/* the information window */
+ 
++#ifdef TWM_USE_XFT
++    XftDraw *xft_SizeWindow;	/* size window Xft draw context */
++    XftDraw *xft_InfoWindow;	/* info window Xft draw context */
++    XftColor xft_DefaultC;	/* text color for info, size windows */
++#endif
++
+     name_list *Icons;		/* list of icon pixmaps */
+     TitlebarPixmaps tbpm;	/* titlebar pixmaps */
+     Pixmap UnknownPm;		/* the unknown icon pixmap */

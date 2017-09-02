@@ -1,0 +1,57 @@
+--- iconmgr.c.orig1	2007-09-15 19:08:18.000000000 +0200
++++ iconmgr.c	2007-09-15 20:38:02.000000000 +0200
+@@ -382,14 +382,13 @@
+ 
+     tmp->twm = tmp_win;
+ 
+-    tmp->fore = Scr->IconManagerC.fore;
+-    tmp->back = Scr->IconManagerC.back;
++    tmp->IconManagerC = Scr->IconManagerC;
+     tmp->highlight = Scr->IconManagerHighlight;
+ 
+     GetColorFromList(Scr->IconManagerFL, tmp_win->full_name, &tmp_win->class,
+-	&tmp->fore);
++	&tmp->IconManagerC.fore);
+     GetColorFromList(Scr->IconManagerBL, tmp_win->full_name, &tmp_win->class,
+-	&tmp->back);
++	&tmp->IconManagerC.back);
+     GetColorFromList(Scr->IconManagerHighlightL, tmp_win->full_name,
+ 	&tmp_win->class, &tmp->highlight);
+ 
+@@ -403,8 +402,8 @@
+     tmp->y = -1;
+     
+     valuemask = (CWBackPixel | CWBorderPixel | CWEventMask | CWCursor);
+-    attributes.background_pixel = tmp->back;
+-    attributes.border_pixel = tmp->back;
++    attributes.background_pixel = tmp->IconManagerC.back;
++    attributes.border_pixel = tmp->IconManagerC.back;
+     attributes.event_mask = (KeyPressMask | ButtonPressMask |
+ 			     ButtonReleaseMask | ExposureMask |
+ 			     EnterWindowMask | LeaveWindowMask);
+@@ -416,7 +415,7 @@
+ 
+ 
+     valuemask = (CWBackPixel | CWBorderPixel | CWEventMask | CWCursor);
+-    attributes.background_pixel = tmp->back;
++    attributes.background_pixel = tmp->IconManagerC.back;
+     attributes.border_pixel = Scr->Black;
+     attributes.event_mask = (ButtonReleaseMask| ButtonPressMask |
+ 			     ExposureMask);
+@@ -566,14 +565,14 @@
+ void DrawIconManagerBorder(WList *tmp)
+ {
+     {
+-	XSetForeground(dpy, Scr->NormalGC, tmp->fore);
++	XSetForeground(dpy, Scr->NormalGC, tmp->IconManagerC.fore);
+ 	    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 2, 2,
+ 		tmp->width-5, tmp->height-5);
+ 
+ 	if (tmp->active && Scr->Highlight)
+ 	    XSetForeground(dpy, Scr->NormalGC, tmp->highlight);
+ 	else
+-	    XSetForeground(dpy, Scr->NormalGC, tmp->back);
++	    XSetForeground(dpy, Scr->NormalGC, tmp->IconManagerC.back);
+ 
+ 	XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 0, 0,
+ 	    tmp->width-1, tmp->height-1);

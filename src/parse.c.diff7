@@ -1,0 +1,29 @@
+--- parse.c.orig7	2007-09-27 23:01:04.000000000 +0200
++++ parse.c	2007-09-27 23:02:21.000000000 +0200
+@@ -346,6 +346,7 @@
+ #define kws_UnknownIcon			7
+ #define kws_IconDirectory		8
+ #define kws_MaxWindowSize		9
++#define kws_DefaultFont			10
+ 
+ #define kwn_ConstrainedMoveTime		1
+ #define kwn_MoveDelta			2
+@@ -411,6 +412,7 @@
+     { "cursors",		CURSORS, 0 },
+     { "decoratetransients",	KEYWORD, kw0_DecorateTransients },
+     { "defaultbackground",	CKEYWORD, kwc_DefaultBackground },
++    { "defaultfont",		SKEYWORD, kws_DefaultFont },
+     { "defaultforeground",	CKEYWORD, kwc_DefaultForeground },
+     { "defaultfunction",	DEFAULT_FUNCTION, 0 },
+     { "destroy",		KILL, 0 },
+@@ -775,6 +777,10 @@
+ 	if (!Scr->HaveFonts) Scr->IconManagerFont.name = s;
+ 	return 1;
+ 
++      case kws_DefaultFont:
++	if (!Scr->HaveFonts) Scr->DefaultFont.name = s;
++	return 1;
++
+       case kws_UnknownIcon:
+ 	if (Scr->FirstTime) GetUnknownIcon (s);
+ 	return 1;

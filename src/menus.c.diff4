@@ -1,0 +1,12 @@
+--- menus.c.orig4	2007-10-29 23:47:57.000000000 +0100
++++ menus.c	2007-10-29 23:48:01.000000000 +0100
+@@ -857,6 +857,9 @@
+ 	mr->xft_w = XftDrawCreate (dpy, mr->w, Scr->d_visual,
+ 				XDefaultColormap (dpy, Scr->screen));
+ #endif
++#ifdef TWM_USE_OPACITY
++	SetWindowOpacity (mr->w, Scr->MenuOpacity);
++#endif
+ 
+ 	XSaveContext(dpy, mr->w, MenuContext, (caddr_t)mr);
+ 	XSaveContext(dpy, mr->w, ScreenContext, (caddr_t)Scr);

@@ -1,0 +1,86 @@
+--- iconmgr.c.orig7	2007-11-06 10:45:17.000000000 +0100
++++ iconmgr.c	2007-11-06 11:01:25.000000000 +0100
+@@ -66,6 +66,7 @@
+     char str1[100];
+     Pixel background;
+     char *icon_name;
++    XClassHint class;
+ 
+     if (Scr->NoIconManagers)
+ 	return;
+@@ -106,6 +107,10 @@
+ 
+ 	XSetStandardProperties(dpy, p->w, str, icon_name, None, NULL, 0, NULL);
+ 
++	class.res_name = str;
++	class.res_class = "TWM Icon Manager";
++	XSetClassHint (dpy, p->w, &class); /* now iconmanager class .twmrc-configurable */
++
+ 	p->twm_win = AddWindow(p->w, TRUE, p);
+ 	SetMapStateProp (p->twm_win, WithdrawnState);
+ 
+@@ -295,6 +300,10 @@
+     if (tmp == NULL)
+       return;
+ 
++    /* make the client window prominently visible: */
++    if (tmp->twm->mapped)
++	XRaiseWindow (dpy, tmp->twm->frame);
++
+     /* raise the frame so the icon manager is visible */
+     if (ip->twm_win->mapped) {
+ 	XRaiseWindow(dpy, ip->twm_win->frame);
+@@ -613,33 +622,42 @@
+     active->active = TRUE;
+     Active = active;
+     Active->iconmgr->active = active;
+-    DrawIconManagerBorder(active);
++    DrawIconManagerEntry(active);
+ }
+ 
+ void NotActiveIconManager(WList *active)
+ {
+     active->active = FALSE;
+-    DrawIconManagerBorder(active);
++    DrawIconManagerEntry(active);
+ }
+ 
+-void DrawIconManagerBorder(WList *tmp)
++void DrawIconManagerEntry(WList *tmp)
+ {
+     /* speedup: only draw if iconmanager window mapped: */
+     if (tmp->iconmgr->twm_win->mapped)
+     {
+-	XSetForeground(dpy, Scr->NormalGC, tmp->IconManagerC.fore);
+-	    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 2, 2,
+-		tmp->width-5, tmp->height-5);
+-
+ 	if (tmp->active && Scr->Highlight)
+ 	    XSetForeground(dpy, Scr->NormalGC, tmp->highlight);
+ 	else
+ 	    XSetForeground(dpy, Scr->NormalGC, tmp->IconManagerC.back);
+ 
+-	XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 0, 0,
+-	    tmp->width-1, tmp->height-1);
+-	XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 1, 1,
+-	    tmp->width-3, tmp->height-3);
++	XFillRectangle (dpy, tmp->w, Scr->NormalGC, 0, 0, tmp->width, tmp->height);
++
++	MyFont_DrawString (dpy, DRAW_WIN(tmp,w),
++			&Scr->IconManagerFont, DRAW_COL(tmp,IconManagerC),
++			iconmgr_textx, Scr->IconManagerFont.y
++				+ (tmp->height - Scr->IconManagerFont.height) / 2,
++			tmp->twm->icon_name, strlen(tmp->twm->icon_name));
++
++	if (Scr->BorderWidth > 0 || tmp->iconmgr->columns > 1) {
++	    if (tmp->iconmgr->columns > 1)
++		XSetForeground (dpy, Scr->NormalGC, tmp->highlight);
++	    else
++		XSetForeground (dpy, Scr->NormalGC, tmp->IconManagerC.fore);
++
++	    XDrawRectangle (dpy, tmp->w, Scr->NormalGC, 0, 0,
++				tmp->width-1, tmp->height-1);
++	}
+     }
+ }
+ 

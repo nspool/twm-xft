@@ -1,0 +1,20 @@
+--- twm.c.orig7	2007-10-29 23:53:37.000000000 +0100
++++ twm.c	2007-10-29 23:53:42.000000000 +0100
+@@ -646,7 +646,7 @@
+ 		     CWBackingStore | CWCursor);
+ 	Scr->InfoWindow = XCreateWindow (dpy, Scr->Root, 0, 0, 
+ 					 (unsigned int) 5, (unsigned int) 5,
+-					 (unsigned int) BW, 0,
++					 (unsigned int) Scr->BorderWidth, 0,
+ 					 (unsigned int) CopyFromParent,
+ 					 (Visual *) CopyFromParent,
+ 					 valuemask, &attributes);
+@@ -659,7 +659,7 @@
+ 					 (unsigned int) Scr->SizeStringWidth,
+ 					 (unsigned int) (Scr->SizeFont.height +
+ 							 SIZE_VINDENT*2),
+-					 (unsigned int) BW, 0,
++					 (unsigned int) Scr->BorderWidth, 0,
+ 					 (unsigned int) CopyFromParent,
+ 					 (Visual *) CopyFromParent,
+ 					 valuemask, &attributes);

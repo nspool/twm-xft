@@ -1,0 +1,34 @@
+--- twm.c.orig4	2007-10-29 22:56:21.000000000 +0100
++++ twm.c	2007-10-29 23:04:13.000000000 +0100
+@@ -359,6 +359,10 @@
+     (void) XInternAtoms(dpy, atom_names, sizeof TwmAtoms / sizeof TwmAtoms[0],
+ 			False, TwmAtoms);
+ 
++#ifdef TWM_USE_OPACITY
++    opacityAtom = XInternAtom (dpy, "_NET_WM_WINDOW_OPACITY", False);
++#endif
++
+     /* Set up the per-screen global information. */
+ 
+     NumScreens = ScreenCount(dpy);
+@@ -668,6 +672,9 @@
+ 	CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen),
+ 					 Scr->DefaultC.fore, &Scr->xft_DefaultC);
+ #endif
++#if defined TWM_USE_OPACITY  &&  1 /* "infowindows" get MenuOpacity */
++	SetWindowOpacity (Scr->InfoWindow, Scr->MenuOpacity);
++#endif
+ 
+ 	XUngrabServer(dpy);
+ 
+@@ -776,6 +783,10 @@
+     Scr->MenuBorderWidth = BW;
+     Scr->UnknownWidth = 0;
+     Scr->UnknownHeight = 0;
++#ifdef TWM_USE_OPACITY
++    Scr->MenuOpacity = 255;		/* 0 = transparent ... 255 = opaque */
++    Scr->IconOpacity = 255;
++#endif
+     Scr->NumAutoRaises = 0;
+     Scr->NoDefaults = FALSE;
+     Scr->UsePPosition = PPOS_OFF;

@@ -1,0 +1,48 @@
+--- util.h.orig2	2007-09-18 10:35:02.000000000 +0200
++++ util.h	2007-09-23 12:48:35.000000000 +0200
+@@ -80,17 +80,39 @@
+ extern void GetColorValue ( int kind, XColor *what, char *name );
+ extern void GetFont ( MyFont *font );
+ extern int MyFont_TextWidth( MyFont *font, char *string, int len);
+-extern void MyFont_DrawImageString( Display *dpy, Drawable d, MyFont *font, 
+-				    ColorPair *col,
+-				    int x, int y, char * string, int len);
+-extern void MyFont_DrawString( Display *dpy, Drawable d, MyFont *font, 
+-			       ColorPair *col,
+-			       int x, int y, char * string, int len);
++
++#ifdef TWM_USE_XFT
++/* Xft-related variables have "xft_" prefix: */
++#define XFT_PFX(p,n)		p ## n
++#define DRAW_WIN(t,w)		((t)->XFT_PFX(xft_,w))
++#define DRAW_COL(t,c)		(&(t)->XFT_PFX(xft_,c))
++#define DRAW_WIN_T		XftDraw*
++#define DRAW_COL_T		XftColor*
++#else
++#define DRAW_WIN(t,w)		((t)->w)
++#define DRAW_COL(t,c)		(&(t)->c)
++#define DRAW_WIN_T		Drawable
++#define DRAW_COL_T		ColorPair*
++#endif
++
++extern void MyFont_DrawImageString ( Display *dpy,
++			DRAW_WIN_T d, MyFont *font, DRAW_COL_T col,
++			int x, int y, char *string, int len );
++
++extern void MyFont_DrawString ( Display *dpy,
++			DRAW_WIN_T d, MyFont *font, DRAW_COL_T col,
++			int x, int y, char *string, int len );
++
+ extern Status I18N_FetchName( Display *dpy, Window win, char **winname);
+ extern Status I18N_GetIconName( Display *dpy, Window win, char **iconname);
+ extern void SetFocus ( TwmWindow *tmp_win, Time time );
+ extern void Bell ( int type, int percent, Window win );
+ 
++#ifdef TWM_USE_XFT
++extern void CopyPixelToXftColor (Colormap cmap,
++				unsigned long pixel, XftColor *col);
++#endif
++
+ extern int HotX, HotY;
+ 
+ #define	WM_BELL			0

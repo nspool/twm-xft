@@ -1,0 +1,128 @@
+--- add_window.c.orig1	2007-09-15 19:08:48.000000000 +0200
++++ add_window.c	2007-09-18 09:49:08.000000000 +0200
+@@ -486,10 +486,8 @@
+ 	    XMapRaised(dpy, Scr->SizeWindow);
+ 	    InstallRootColormap();
+ 
+-	    MyFont_ChangeGC(Scr->DefaultC.fore, Scr->DefaultC.back,
+-			    &Scr->SizeFont);
+ 	    MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont,
+-				    Scr->NormalGC,
++				    &Scr->DefaultC,
+ 				    SIZE_HINDENT,
+ 				    SIZE_VINDENT + Scr->SizeFont.ascent,
+ 				    tmp_win->name, namelen);
+@@ -591,7 +589,7 @@
+ 		XResizeWindow (dpy, Scr->SizeWindow, Scr->SizeStringOffset +
+ 			       Scr->SizeStringWidth, height);
+ 		MyFont_DrawImageString (dpy, Scr->SizeWindow, &Scr->SizeFont,
+-				  Scr->NormalGC, width,
++				  &Scr->DefaultC, width,
+ 				  SIZE_VINDENT + Scr->SizeFont.ascent,
+ 				  ": ", 2);
+ 		if (0/*Scr->AutoRelativeResize*/) {
+@@ -762,31 +760,28 @@
+ 
+     /* get all the colors for the window */
+ 
+-    tmp_win->border = Scr->BorderColor;
+-    tmp_win->icon_border = Scr->IconBorderColor;
+-    tmp_win->border_tile.fore = Scr->BorderTileC.fore;
+-    tmp_win->border_tile.back = Scr->BorderTileC.back;
+-    tmp_win->title.fore = Scr->TitleC.fore;
+-    tmp_win->title.back = Scr->TitleC.back;
+-    tmp_win->iconc.fore = Scr->IconC.fore;
+-    tmp_win->iconc.back = Scr->IconC.back;
++    tmp_win->BorderColor = Scr->BorderColor;
++    tmp_win->IconBorderColor = Scr->IconBorderColor;
++    tmp_win->BorderTileC = Scr->BorderTileC;
++    tmp_win->TitleC = Scr->TitleC;
++    tmp_win->IconC = Scr->IconC;
+ 
+     GetColorFromList(Scr->BorderColorL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->border);
++	&tmp_win->BorderColor);
+     GetColorFromList(Scr->IconBorderColorL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->icon_border);
++	&tmp_win->IconBorderColor);
+     GetColorFromList(Scr->BorderTileForegroundL, tmp_win->full_name,
+-	&tmp_win->class, &tmp_win->border_tile.fore);
++	&tmp_win->class, &tmp_win->BorderTileC.fore);
+     GetColorFromList(Scr->BorderTileBackgroundL, tmp_win->full_name,
+-	&tmp_win->class, &tmp_win->border_tile.back);
++	&tmp_win->class, &tmp_win->BorderTileC.back);
+     GetColorFromList(Scr->TitleForegroundL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->title.fore);
++	&tmp_win->TitleC.fore);
+     GetColorFromList(Scr->TitleBackgroundL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->title.back);
++	&tmp_win->TitleC.back);
+     GetColorFromList(Scr->IconForegroundL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->iconc.fore);
++	&tmp_win->IconC.fore);
+     GetColorFromList(Scr->IconBackgroundL, tmp_win->full_name, &tmp_win->class,
+-	&tmp_win->iconc.back);
++	&tmp_win->IconC.back);
+ 
+ 
+     /* create windows */
+@@ -799,7 +794,7 @@
+ 
+     valuemask = CWBackPixmap | CWBorderPixel | CWCursor | CWEventMask;
+     attributes.background_pixmap = None;
+-    attributes.border_pixel = tmp_win->border;
++    attributes.border_pixel = tmp_win->BorderColor;
+     attributes.cursor = Scr->FrameCursor;
+     attributes.event_mask = (SubstructureRedirectMask | 
+ 			     ButtonPressMask | ButtonReleaseMask |
+@@ -823,8 +818,8 @@
+ 	valuemask = (CWEventMask | CWBorderPixel | CWBackPixel);
+ 	attributes.event_mask = (KeyPressMask | ButtonPressMask |
+ 				 ButtonReleaseMask | ExposureMask);
+-	attributes.border_pixel = tmp_win->border;
+-	attributes.background_pixel = tmp_win->title.back;
++	attributes.border_pixel = tmp_win->BorderColor;
++	attributes.background_pixel = tmp_win->TitleC.back;
+ 	tmp_win->title_w = XCreateWindow (dpy, tmp_win->frame, 
+ 					  -tmp_win->frame_bw,
+ 					  -tmp_win->frame_bw,
+@@ -845,7 +840,7 @@
+     {
+ 	tmp_win->gray = XCreatePixmapFromBitmapData(dpy, Scr->Root, 
+ 	    gray_bits, gray_width, gray_height, 
+-	    tmp_win->border_tile.fore, tmp_win->border_tile.back,
++	    tmp_win->BorderTileC.fore, tmp_win->BorderTileC.back,
+ 	    Scr->d_depth);
+ 
+ 	SetBorder (tmp_win, False);
+@@ -1130,8 +1125,8 @@
+ 	pm = XCreatePixmap (dpy, tmp_win->title_w,
+ 			    Scr->hilite_pm_width, Scr->hilite_pm_height,
+ 			    Scr->d_depth);
+-	gcv.foreground = tmp_win->title.fore;
+-	gcv.background = tmp_win->title.back;
++	gcv.foreground = tmp_win->TitleC.fore;
++	gcv.background = tmp_win->TitleC.back;
+ 	gcv.graphics_exposures = False;
+ 	gc = XCreateGC (dpy, pm,
+ 			(GCForeground|GCBackground|GCGraphicsExposures),
+@@ -1151,7 +1146,7 @@
+ 	attributes.background_pixmap = pm;
+     } else {
+ 	valuemask = CWBackPixel;
+-	attributes.background_pixel = tmp_win->title.fore;
++	attributes.background_pixel = tmp_win->TitleC.fore;
+     }
+ 
+     w = XCreateWindow (dpy, tmp_win->title_w, 0, Scr->FramePadding,
+@@ -1279,8 +1274,8 @@
+     rightx = tmp_win->rightx;
+ 
+     attributes.win_gravity = NorthWestGravity;
+-    attributes.background_pixel = tmp_win->title.back;
+-    attributes.border_pixel = tmp_win->title.fore;
++    attributes.background_pixel = tmp_win->TitleC.back;
++    attributes.border_pixel = tmp_win->TitleC.fore;
+     attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
+ 			     ExposureMask);
+     attributes.cursor = Scr->ButtonCursor;

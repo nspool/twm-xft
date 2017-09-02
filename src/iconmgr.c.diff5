@@ -1,0 +1,222 @@
+--- iconmgr.c.orig5	2007-11-05 19:12:48.000000000 +0100
++++ iconmgr.c	2007-11-05 19:12:53.000000000 +0100
+@@ -109,6 +109,8 @@
+ 	p->twm_win = AddWindow(p->w, TRUE, p);
+ 	SetMapStateProp (p->twm_win, WithdrawnState);
+ 
++	p->cur_columns = p->cur_rows = 0; /* initially no entries */
++
+ #if defined TWM_USE_OPACITY  &&  1 /* "iconmanager" windows get IconOpacity */
+ 	SetWindowOpacity (p->twm_win->frame, Scr->IconOpacity);
+ #endif
+@@ -179,90 +181,115 @@
+ {
+     IconMgr *ip;
+     WList *tmp = NULL;
+-    int cur_row, cur_col, new_row, new_col;
++    int new_row, new_col;
+     int row_inc, col_inc;
+     int got_it;
+ 
+     if (!Active) return;
+ 
+-    cur_row = Active->row;
+-    cur_col = Active->col;
+     ip = Active->iconmgr;
+ 
+-    row_inc = 0;
+-    col_inc = 0;
+-    got_it = FALSE;
++    /*
++     *  if iconmgr not mapped, return only a *mapped* client as success
++     */
+ 
+     switch (dir)
+     {
+ 	case F_FORWICONMGR:
+ 	    if ((tmp = Active->next) == NULL)
+ 		tmp = ip->first;
+-	    got_it = TRUE;
++	    if (!ip->twm_win->mapped)
++		/* look for next *mapped* client: */
++		while (tmp != Active && !tmp->twm->mapped)
++		    if ((tmp = tmp->next) == NULL)
++			tmp = ip->first;
+ 	    break;
+ 
+ 	case F_BACKICONMGR:
+ 	    if ((tmp = Active->prev) == NULL)
+ 		tmp = ip->last;
+-	    got_it = TRUE;
++	    if (!ip->twm_win->mapped)
++		while (tmp != Active && !tmp->twm->mapped)
++		    if ((tmp = tmp->prev) == NULL)
++			tmp = ip->last;
+ 	    break;
+ 
+-	case F_UPICONMGR:
+-	    row_inc = -1;
+-	    break;
++	default:
+ 
+-	case F_DOWNICONMGR:
+-	    row_inc = 1;
+-	    break;
++	    row_inc = 0;
++	    col_inc = 0;
+ 
+-	case F_LEFTICONMGR:
+-	    col_inc = -1;
+-	    break;
++	    switch (dir)
++	    {
++		case F_LEFTICONMGR:
++		    col_inc = -1;
++		    break;
++
++		case F_RIGHTICONMGR:
++		    col_inc = 1;
++		    break;
++
++		case F_UPICONMGR:
++		    row_inc = -1;
++		    break;
++
++		case F_DOWNICONMGR:
++		default:
++		    row_inc = 1;
++		    break;
++	    }
+ 
+-	case F_RIGHTICONMGR:
+-	    col_inc = 1;
+-	    break;
+-    }
++	    got_it = FALSE;
+ 
+-    /* If got_it is FALSE ast this point then we got a left, right,
+-     * up, or down, command.  We will enter this loop until we find
+-     * a window to warp to.
+-     */
+-    new_row = cur_row;
+-    new_col = cur_col;
++	    /* If got_it is FALSE ast this point then we got a left, right,
++	     * up, or down, command.  We will enter this loop until we find
++	     * a window to warp to.
++	     */
+ 
+-    while (!got_it)
+-    {
+-	new_row += row_inc;
+-	new_col += col_inc;
+-	if (new_row < 0)
+-	    new_row = ip->cur_rows - 1;
+-	if (new_col < 0)
+-	    new_col = ip->cur_columns - 1;
+-	if (new_row >= ip->cur_rows)
+-	    new_row = 0;
+-	if (new_col >= ip->cur_columns)
+-	    new_col = 0;
+-	    
+-	/* Now let's go through the list to see if there is an entry with this
+-	 * new position
+-	 */
+-	for (tmp = ip->first; tmp != NULL; tmp = tmp->next)
+-	{
+-	    if (tmp->row == new_row && tmp->col == new_col)
++	    new_row = Active->row;
++	    new_col = Active->col;
++
++	    while (!got_it)
+ 	    {
+-		got_it = TRUE;
+-		break;
++		new_row += row_inc;
++		new_col += col_inc;
++		if (new_row < 0)
++		    new_row = ip->cur_rows - 1;
++		if (new_col < 0)
++		    new_col = ip->cur_columns - 1;
++		if (new_row >= ip->cur_rows)
++		    new_row = 0;
++		if (new_col >= ip->cur_columns)
++		    new_col = 0;
++
++		if ((row_inc != 0 && new_row == Active->row)
++			|| (col_inc != 0 && new_col == Active->col))
++		    break;
++
++		/* Now let's go through the list to see if there is an entry
++		 * with this new position
++		 */
++		for (tmp = ip->first; tmp != NULL; tmp = tmp->next)
++		{
++		    /* accept only a *mapped* client: */
++		    if (!ip->twm_win->mapped && !tmp->twm->mapped)
++			continue;
++
++		    if (tmp->row == new_row && tmp->col == new_col)
++		    {
++			got_it = TRUE;
++			break;
++		    }
++		}
+ 	    }
+-	}
+-    }
+ 
+-    if (!got_it)
+-    {
+-	fprintf (stderr, 
+-		 "%s:  unable to find window (%d, %d) in icon manager\n", 
+-		 ProgramName, new_row, new_col);
+-	return;
++	    if (ip->twm_win->mapped && !got_it)
++	    {
++		fprintf (stderr, 
++			 "%s:  unable to find window (%d, %d) in icon manager\n", 
++			 ProgramName, new_row, new_col);
++		return;
++	    }
+     }
+ 
+     if (tmp == NULL)
+@@ -577,6 +604,8 @@
+ 	XUnmapWindow(dpy, ip->twm_win->frame);
+     }
+ 
++    if (Active == tmp)
++	Active = NULL;
+ }
+ 
+ void ActiveIconManager(WList *active)
+@@ -660,7 +689,6 @@
+ {
+     int newwidth, i, row, col, maxcol,  colinc, rowinc, wheight, wwidth;
+     int new_x, new_y;
+-    int savewidth;
+     WList *tmp;
+ 
+ #ifdef TWM_USE_XFT /*spacing*/
+@@ -674,7 +702,7 @@
+     if (wheight < (siconify_height + 4))
+ 	wheight = siconify_height + 4;
+ 
+-    wwidth = ip->width / ip->columns;
++    wwidth = ip->width / (ip->cur_columns ? ip->cur_columns : ip->columns);
+ 
+     rowinc = wheight;
+     colinc = wwidth;
+@@ -723,10 +751,6 @@
+ 
+     XResizeWindow(dpy, ip->w, newwidth, ip->height);
+ 
+-    savewidth = ip->width;
+-    if (ip->twm_win)
+-      SetupWindow (ip->twm_win,
+-		   ip->twm_win->frame_x, ip->twm_win->frame_y,
+-		   newwidth, ip->height + ip->twm_win->title_height, -1);
+-    ip->width = savewidth;
++    SetupWindow (ip->twm_win, ip->twm_win->frame_x, ip->twm_win->frame_y,
++		newwidth, ip->height + ip->twm_win->title_height, -1);
+ }

@@ -1,0 +1,81 @@
+--- events.c.orig1	2007-09-15 19:08:38.000000000 +0200
++++ events.c	2007-09-18 09:50:45.000000000 +0200
+@@ -882,7 +882,7 @@
+ 	    pm = XCreatePixmap (dpy, Scr->Root, Tmp_win->icon_width,
+ 				Tmp_win->icon_height, Scr->d_depth);
+ 
+-	    FB(Tmp_win->iconc.fore, Tmp_win->iconc.back);
++	    FB(Tmp_win->IconC.fore, Tmp_win->IconC.back);
+ 	    XCopyPlane(dpy, Tmp_win->wmhints->icon_pixmap, pm,
+ 		Scr->NormalGC,
+ 		0,0, Tmp_win->icon_width, Tmp_win->icon_height, 0, 0, 1 );
+@@ -1037,14 +1037,11 @@
+ 	int i;
+ 	int height;
+ 
+-	MyFont_ChangeGC(Scr->DefaultC.fore, Scr->DefaultC.back,
+-	    &Scr->DefaultFont);
+-
+ 	height = Scr->DefaultFont.height+2;
+ 	for (i = 0; i < InfoLines; i++)
+ 	{
+ 	    MyFont_DrawString(dpy, Scr->InfoWindow, &Scr->DefaultFont, 
+-		Scr->NormalGC, 5, (i*height) + Scr->DefaultFont.y, Info[i], 
++		&Scr->DefaultC, 5, (i*height) + Scr->DefaultFont.y, Info[i], 
+ 		strlen(Info[i]));
+ 	}
+ 	flush_expose (Event.xany.window);
+@@ -1053,21 +1050,15 @@
+     {
+ 	if (Event.xany.window == Tmp_win->title_w)
+ 	{
+-	    MyFont_ChangeGC(Tmp_win->title.fore, Tmp_win->title.back,
+-		&Scr->TitleBarFont);
+-
+ 	    MyFont_DrawString (dpy, Tmp_win->title_w, &Scr->TitleBarFont,
+-		Scr->NormalGC, Scr->TBInfo.titlex, Scr->TitleBarFont.y, 
++		&Tmp_win->TitleC, Scr->TBInfo.titlex, Scr->TitleBarFont.y, 
+ 		Tmp_win->name, strlen(Tmp_win->name));
+ 	    flush_expose (Event.xany.window);
+ 	}
+ 	else if (Event.xany.window == Tmp_win->icon_w)
+ 	{
+-	    MyFont_ChangeGC(Tmp_win->iconc.fore, Tmp_win->iconc.back,
+-		&Scr->IconFont);
+-
+ 	    MyFont_DrawString (dpy, Tmp_win->icon_w, &Scr->IconFont,
+-		Scr->NormalGC, Tmp_win->icon_x, Tmp_win->icon_y,
++		&Tmp_win->IconC, Tmp_win->icon_x, Tmp_win->icon_y,
+ 		Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 	    flush_expose (Event.xany.window);
+ 	    return;
+@@ -1081,7 +1072,7 @@
+ 		if (w == tbw->window) {
+ 		    register TitleButton *tb = tbw->info;
+ 
+-		    FB(Tmp_win->title.fore, Tmp_win->title.back);
++		    FB(Tmp_win->TitleC.fore, Tmp_win->TitleC.back);
+ 		    XCopyPlane (dpy, tb->bitmap, w, Scr->NormalGC,
+ 				tb->srcx, tb->srcy, tb->width, tb->height,
+ 				tb->dstx, tb->dsty, 1);
+@@ -1093,10 +1084,8 @@
+ 	if (Tmp_win->list) {
+ 	    if (Event.xany.window == Tmp_win->list->w)
+ 	    {
+-		MyFont_ChangeGC(Tmp_win->list->fore, Tmp_win->list->back,
+-		    &Scr->IconManagerFont);
+ 		MyFont_DrawString (dpy, Event.xany.window,
+-		    &Scr->IconManagerFont, Scr->NormalGC,
++		    &Scr->IconManagerFont, &Tmp_win->list->IconManagerC,
+ 		    iconmgr_textx, Scr->IconManagerFont.y+4,
+ 		    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 		DrawIconManagerBorder(Tmp_win->list);
+@@ -1105,7 +1094,7 @@
+ 	    }
+ 	    if (Event.xany.window == Tmp_win->list->icon)
+ 	    {
+-		FB(Tmp_win->list->fore, Tmp_win->list->back);
++		FB(Tmp_win->list->IconManagerC.fore, Tmp_win->list->IconManagerC.back);
+ 		XCopyPlane(dpy, Scr->siconifyPm, Tmp_win->list->icon,
+ 		    Scr->NormalGC,
+ 		    0,0, iconifybox_width, iconifybox_height, 0, 0, 1);

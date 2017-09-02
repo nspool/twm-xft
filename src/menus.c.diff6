@@ -1,0 +1,33 @@
+--- menus.c.orig6	2007-11-06 10:34:55.000000000 +0100
++++ menus.c	2007-11-06 10:36:36.000000000 +0100
+@@ -1903,6 +1903,13 @@
+ 	{
+ 	    Iconify (tmp_win, eventp->xbutton.x_root - 5,
+ 		     eventp->xbutton.y_root - 5);
++
++	    /* if iconmgr is mapped warp mouse there: */
++	    if (Scr->WarpCursor && Scr->iconmgr.active
++				&& Scr->iconmgr.active->twm == tmp_win
++				&& tmp_win->list
++				&& tmp_win->list->iconmgr->twm_win->mapped)
++		XWarpPointer(dpy, None, tmp_win->list->icon, 0,0,0,0, 5, 5);
+ 	}
+ 	break;
+ 
+@@ -2829,6 +2836,16 @@
+       XUnmapWindow (dpy, Scr->iconmgr.twm_win->icon_w);
+     Scr->iconmgr.twm_win->mapped = FALSE;
+     Scr->iconmgr.twm_win->icon = TRUE;
++
++    /* warp mouse to the "active" client: */
++    if (Scr->WarpCursor && Scr->iconmgr.active && Scr->iconmgr.active->twm->mapped)
++    {
++	XQueryPointer (dpy, Scr->iconmgr.active->twm->frame, &JunkRoot, 
++			&JunkChild, &JunkX, &JunkY, &HotX, &HotY, &JunkMask);
++	/* skip if already there: */
++	if (JunkChild != Scr->iconmgr.active->twm->w)
++	    WarpToWindow (Scr->iconmgr.active->twm);
++    }
+ }
+ 
+ 

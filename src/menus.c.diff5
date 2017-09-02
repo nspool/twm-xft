@@ -1,0 +1,26 @@
+--- menus.c.orig5	2007-11-05 19:12:48.000000000 +0100
++++ menus.c	2007-11-05 19:12:53.000000000 +0100
+@@ -1354,7 +1354,13 @@
+         XGrabPointer(dpy, Scr->Root, True,
+             ButtonPressMask | ButtonReleaseMask,
+             GrabModeAsync, GrabModeAsync,
+-            Scr->Root, Scr->WaitCursor, CurrentTime);
++	    /*
++	     * don't warp to another screen
++	     * if some client de/iconifies itself there
++	     * (as otherwise imposed by 'confine_to' Scr->Root):
++	     */
++            (func==F_ICONIFY || func==F_DEICONIFY ? None : Scr->Root),
++            Scr->WaitCursor, CurrentTime);
+ 	break;
+     }
+ 
+@@ -1395,7 +1401,7 @@
+         break;
+ 
+     case F_SHOWLIST:
+-	if (Scr->NoIconManagers)
++	if (Scr->NoIconManagers || Scr->iconmgr.count == 0) /*skip if no clients*/
+ 	    break;
+ 	DeIconify(Scr->iconmgr.twm_win);
+ 	XRaiseWindow(dpy, Scr->iconmgr.twm_win->frame);

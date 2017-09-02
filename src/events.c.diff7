@@ -1,0 +1,38 @@
+--- events.c.orig7	2007-10-29 23:53:37.000000000 +0100
++++ events.c	2007-10-29 23:57:17.000000000 +0100
+@@ -1123,16 +1123,7 @@
+ 	if (Tmp_win->list) {
+ 	    if (Event.xany.window == Tmp_win->list->w)
+ 	    {
+-		MyFont_DrawString (dpy, DRAW_WIN(Tmp_win->list,w),
+-		    &Scr->IconManagerFont, DRAW_COL(Tmp_win->list,IconManagerC),
+-#ifdef TWM_USE_XFT /*spacing*/
+-		    iconmgr_textx, Scr->IconManagerFont.y
+-			+ (Tmp_win->list->height-Scr->IconManagerFont.height)/2,
+-#else
+-		    iconmgr_textx, Scr->IconManagerFont.y+4,
+-#endif
+-		    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+-		DrawIconManagerBorder(Tmp_win->list);
++		DrawIconManagerEntry (Tmp_win->list);
+ 		flush_expose (Event.xany.window);
+ 		return;
+ 	    }
+@@ -1678,7 +1669,7 @@
+ 	if (DownIconManager)
+ 	{
+ 	    DownIconManager->down = FALSE;
+-	    if (Scr->Highlight) DrawIconManagerBorder(DownIconManager);
++	    if (Scr->Highlight) DrawIconManagerEntry(DownIconManager);
+ 	    DownIconManager = NULL;
+ 	}
+ 	Cancel = FALSE;
+@@ -1863,7 +1854,7 @@
+ 		Event.xany.window == Tmp_win->list->icon))
+ 	{
+ 	    Tmp_win->list->down = TRUE;
+-	    if (Scr->Highlight) DrawIconManagerBorder(Tmp_win->list);
++	    if (Scr->Highlight) DrawIconManagerEntry(Tmp_win->list);
+ 	    DownIconManager = Tmp_win->list;
+ 	    Context = C_ICONMGR;
+ 	}

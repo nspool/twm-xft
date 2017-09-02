@@ -1,0 +1,174 @@
+--- util.c.orig2	2007-11-05 19:59:44.000000000 +0100
++++ util.c	2007-11-05 20:03:54.000000000 +0100
+@@ -582,6 +582,73 @@
+ void
+ GetFont(MyFont *font)
+ {
++#ifdef TWM_USE_XFT
++
++    XFontStruct *xlfd;
++    char **fontlist;
++    int    listcount;
++    Atom   atom;
++    char  *atom_name;
++    char  *deffontname;
++
++    if (font->font != NULL) {
++	XftFontClose (dpy, font->font);
++	font->font = NULL;
++    }
++
++    /* test if core font: */
++    fontlist = XListFontsWithInfo (dpy, font->name, 1, &listcount, &xlfd);
++    if (fontlist != NULL) {
++	if (XGetFontProperty (xlfd, XA_FONT, &atom) == True) {
++	    atom_name = XGetAtomName (dpy, atom);
++	    if (atom_name) {
++		font->font = XftFontOpenXlfd (dpy, Scr->screen, atom_name);
++		XFree (atom_name);
++	    }
++	}
++	XFreeFontInfo (fontlist, xlfd, listcount);
++    }
++
++    /* next, try Xft font: */
++    if (font->font == NULL)
++	font->font = XftFontOpenName (dpy, Scr->screen, font->name);
++
++    /* fallback: */
++    if (font->font == NULL) {
++	if (Scr->DefaultFont.name != NULL)
++	    deffontname = Scr->DefaultFont.name;
++	else
++	    deffontname = "fixed";
++
++	xlfd = XLoadQueryFont (dpy, deffontname);
++	if (xlfd) {
++	    if (XGetFontProperty (xlfd, XA_FONT, &atom) == True) {
++		atom_name = XGetAtomName (dpy, atom);
++		if (atom_name) {
++		    font->font = XftFontOpenXlfd (dpy, Scr->screen, atom_name);
++		    XFree (atom_name);
++		}
++	    }
++	    XFreeFont (dpy, xlfd);
++	}
++
++	if (font->font == NULL)
++	    font->font = XftFontOpenName (dpy, Scr->screen, deffontname);
++
++	if (font->font == NULL) {
++	    fprintf (stderr, "%s:  unable to open fonts \"%s\" or \"%s\"\n",
++		    ProgramName, font->name, deffontname);
++	    exit(1);
++	}
++    }
++
++    font->height = font->font->ascent + font->font->descent;
++    font->y = font->font->ascent;
++    font->ascent = font->font->ascent;
++    font->descent = font->font->descent;
++
++#else
++
+     char *deffontname = "fixed";
+     char **missing_charset_list_return;
+     int missing_charset_count_return;
+@@ -651,11 +718,21 @@
+     font->y = font->font->ascent;
+     font->ascent = font->font->ascent;
+     font->descent = font->font->descent;
++
++#endif /*TWM_USE_XFT*/
+ }
+ 
+ int
+ MyFont_TextWidth(MyFont *font, char *string, int len)
+ {
++#ifdef TWM_USE_XFT
++    XGlyphInfo size;
++    if (use_fontset)
++	XftTextExtentsUtf8 (dpy, font->font, (XftChar8*)(string), strlen(string), &size);
++    else
++	XftTextExtents8 (dpy, font->font, (XftChar8*)(string), strlen(string), &size);
++    return size.width;
++#else
+     XRectangle ink_rect;
+     XRectangle logical_rect;
+ 
+@@ -665,12 +742,21 @@
+ 	return logical_rect.width;
+     }
+     return XTextWidth(font->font, string, len);
++#endif
+ }
+ 
+ void
+-MyFont_DrawImageString(Display *dpy, Drawable d, MyFont *font, ColorPair *col, 
+-                       int x, int y, char *string, int len)
+-{
++MyFont_DrawImageString (Display *dpy,
++			DRAW_WIN_T d, MyFont *font, DRAW_COL_T col,
++			int x, int y, char *string, int len)
++{
++#ifdef TWM_USE_XFT
++    XClearArea (dpy, XftDrawDrawable(d), 0, 0, 0, 0, False);
++    if (use_fontset)
++	XftDrawStringUtf8 (d, col, font->font, x, y, (XftChar8*)(string), len);
++    else
++	XftDrawString8 (d, col, font->font, x, y, (XftChar8*)(string), len);
++#else
+     Gcv.foreground = col->fore;
+     Gcv.background = col->back;
+     if (use_fontset) {
+@@ -681,12 +767,20 @@
+ 	XChangeGC (dpy, Scr->NormalGC, GCFont|GCForeground|GCBackground, &Gcv);
+ 	XDrawImageString (dpy, d, Scr->NormalGC, x, y, string, len);
+     }
++#endif
+ }
+ 
+ void
+-MyFont_DrawString(Display *dpy, Drawable d, MyFont *font, ColorPair *col, 
+-                  int x, int y, char *string, int len)
+-{
++MyFont_DrawString (Display *dpy,
++			DRAW_WIN_T d, MyFont *font, DRAW_COL_T col,
++			int x, int y, char *string, int len)
++{
++#ifdef TWM_USE_XFT
++    if (use_fontset)
++	XftDrawStringUtf8 (d, col, font->font, x, y, (XftChar8*)(string), len);
++    else
++	XftDrawString8 (d, col, font->font, x, y, (XftChar8*)(string), len);
++#else
+     Gcv.foreground = col->fore;
+     Gcv.background = col->back;
+     if (use_fontset) {
+@@ -697,6 +791,7 @@
+ 	XChangeGC (dpy, Scr->NormalGC, GCFont|GCForeground|GCBackground, &Gcv);
+ 	XDrawString (dpy, d, Scr->NormalGC, x, y, string, len);
+     }
++#endif
+ }
+ 
+ /*
+@@ -1066,3 +1161,18 @@
+ #endif
+     return;
+ }
++
++#ifdef TWM_USE_XFT
++void
++CopyPixelToXftColor (Colormap cmap, unsigned long pixel, XftColor *col)
++{
++    /* color already allocated, extract RGB values (for Xft rendering): */
++    XColor tmp;
++    tmp.pixel = col->pixel = pixel;
++    XQueryColor (dpy, cmap, &tmp);
++    col->color.red = tmp.red;
++    col->color.green = tmp.green;
++    col->color.blue = tmp.blue;
++    col->color.alpha = 65535;
++}
++#endif

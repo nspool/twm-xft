@@ -1,0 +1,12 @@
+--- iconmgr.h.orig1	2007-09-15 19:08:14.000000000 +0200
++++ iconmgr.h	2007-09-15 20:23:16.000000000 +0200
+@@ -48,7 +48,8 @@
+     int x, y, width, height;
+     int row, col;
+     int me;
+-    Pixel fore, back, highlight;
++    ColorPair IconManagerC;		/* iconmanager foreground/background */
++    Pixel highlight;			/* iconmanager border highlight */
+     unsigned top, bottom;
+     short active;
+     short down;

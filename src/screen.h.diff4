@@ -1,0 +1,13 @@
+--- screen.h.orig4	2007-09-27 22:33:10.000000000 +0200
++++ screen.h	2007-09-27 22:34:49.000000000 +0200
+@@ -213,6 +213,10 @@
+     int UnknownWidth;		/* width of the unknown icon */
+     int UnknownHeight;		/* height of the unknown icon */
+     int TitleHeight;		/* height of the title bar window */
++#ifdef TWM_USE_OPACITY
++    int MenuOpacity;		/* make use of "_NET_WM_WINDOW_OPACITY" */
++    int IconOpacity;		/* property for twm menus, icons */
++#endif
+     TwmWindow *Focus;		/* the twm window that has focus */
+     int EntryHeight;		/* menu entry height */
+     int FramePadding;		/* distance between decorations and border */

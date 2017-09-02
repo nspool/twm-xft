@@ -1,0 +1,16 @@
+--- resize.c.orig5	2007-10-31 14:05:09.000000000 +0100
++++ resize.c	2007-10-31 16:45:12.000000000 +0100
+@@ -550,12 +550,7 @@
+ 
+     if (tmp_win->iconmgr)
+     {
+-	int ncols = tmp_win->iconmgrp->cur_columns;
+-	if (ncols == 0) ncols = 1;
+-
+-	tmp_win->iconmgrp->width = (int) ((dragWidth *
+-					   (long) tmp_win->iconmgrp->columns)
+-					  / ncols);
++	tmp_win->iconmgrp->width = dragWidth;
+         PackIconManager(tmp_win->iconmgrp);
+     }
+ 

@@ -1,0 +1,25 @@
+--- events.c.orig5	2007-11-05 19:12:48.000000000 +0100
++++ events.c	2007-11-05 19:12:53.000000000 +0100
+@@ -2011,7 +2011,9 @@
+     if (UnHighLight_win && ewp->window != UnHighLight_win->w) {
+       SetBorder (UnHighLight_win, False);	/* application window */
+       if (UnHighLight_win->list) /* in the icon box */
+-	NotActiveIconManager(UnHighLight_win->list);
++	/* Unhighlight only if previous and current window on the same root: */
++	if (UnHighLight_win->attr.root == Scr->Root)
++	    NotActiveIconManager(UnHighLight_win->list);
+     }
+     if (ewp->window == Scr->Root)
+       UnHighLight_win = NULL;
+@@ -2056,7 +2058,10 @@
+ 	     * focus on this window
+ 	     */
+ 	    if (Scr->FocusRoot && (!scanArgs.leaves || scanArgs.inferior)) {
+-		if (Tmp_win->list) ActiveIconManager(Tmp_win->list);
++		if (Tmp_win->list)
++		    if (Event.xcrossing.window == Tmp_win->frame
++				|| Event.xcrossing.window == Tmp_win->list->w)
++			ActiveIconManager(Tmp_win->list);
+ 		if (Tmp_win->mapped) {
+ 		    /*
+ 		     * unhighlight old focus window

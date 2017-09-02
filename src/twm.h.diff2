@@ -1,0 +1,40 @@
+--- twm.h.orig2	2007-09-18 10:35:19.000000000 +0200
++++ twm.h	2007-09-18 12:49:58.000000000 +0200
+@@ -72,6 +72,9 @@
+ #include <X11/Xfuncs.h>
+ #include <X11/StringDefs.h>
+ #include <X11/Intrinsic.h>
++#ifdef TWM_USE_XFT
++#include <X11/Xft/Xft.h>
++#endif
+ 
+ #ifndef WithdrawnState
+ #define WithdrawnState 0
+@@ -147,8 +150,12 @@
+ typedef struct MyFont
+ {
+     char *name;			/* name of the font */
++#ifdef TWM_USE_XFT
++    XftFont *font;		/* Xft font structure */
++#else
+     XFontStruct *font;		/* font structure */
+     XFontSet fontset;		/* fontset structure */
++#endif
+     int height;			/* height of the font */
+     int y;			/* Y coordinate to draw characters */
+     int ascent;
+@@ -272,6 +279,14 @@
+     ColorPair BorderTileC;
+     ColorPair TitleC;
+     ColorPair IconC;
++
++#ifdef TWM_USE_XFT
++    XftDraw *xft_title_w;	/* client window title Xft draw context */
++    XftDraw *xft_icon_w;	/* client window icon name Xft draw context */
++    XftColor xft_TitleC;	/* client window title color */
++    XftColor xft_IconC;		/* icon name color */
++#endif
++
+     short iconified;		/* has the window ever been iconified? */
+     short icon;			/* is the window an icon now ? */
+     short icon_on;		/* is the icon visible */

@@ -1,0 +1,66 @@
+--- events.c.orig3	2007-10-29 21:24:45.000000000 +0100
++++ events.c	2007-10-29 22:45:06.000000000 +0100
+@@ -957,7 +957,11 @@
+     Tmp_win->icon_w_width = MyFont_TextWidth(&Scr->IconFont,
+ 	Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    Tmp_win->icon_w_width += Scr->IconFont.height; /*approx. '1ex' on both sides*/
++#else
+     Tmp_win->icon_w_width += 6;
++#endif
+     if (Tmp_win->icon_w_width < Tmp_win->icon_width)
+     {
+ 	Tmp_win->icon_x = (Tmp_win->icon_width - Tmp_win->icon_w_width)/2;
+@@ -966,7 +970,11 @@
+     }
+     else
+     {
++#ifdef TWM_USE_XFT /*spacing*/
++	Tmp_win->icon_x = Scr->IconFont.height/2;
++#else
+ 	Tmp_win->icon_x = 3;
++#endif
+     }
+ 
+     if (Tmp_win->icon_w_width == Tmp_win->icon_width)
+@@ -976,8 +984,14 @@
+ 
+     y = 0;
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    /* icon label height := 1.44 times font height: */
++    Tmp_win->icon_w_height = Tmp_win->icon_height + 144*Scr->IconFont.height/100;
++    Tmp_win->icon_y = Tmp_win->icon_height + Scr->IconFont.y + 44*Scr->IconFont.height/200;
++#else
+     Tmp_win->icon_w_height = Tmp_win->icon_height + Scr->IconFont.height + 4;
+     Tmp_win->icon_y = Tmp_win->icon_height + Scr->IconFont.height;
++#endif
+ 
+     XResizeWindow(dpy, Tmp_win->icon_w, Tmp_win->icon_w_width,
+ 	Tmp_win->icon_w_height);
+@@ -1044,7 +1058,11 @@
+ 	int i;
+ 	int height;
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++	height = 120*Scr->DefaultFont.height/100; /*baselineskip 1.2*/
++#else
+ 	height = Scr->DefaultFont.height+2;
++#endif
+ 	for (i = 0; i < InfoLines; i++)
+ 	{
+ 	    MyFont_DrawString(dpy, DRAW_WIN(Scr,InfoWindow),
+@@ -1095,7 +1113,12 @@
+ 	    {
+ 		MyFont_DrawString (dpy, DRAW_WIN(Tmp_win->list,w),
+ 		    &Scr->IconManagerFont, DRAW_COL(Tmp_win->list,IconManagerC),
++#ifdef TWM_USE_XFT /*spacing*/
++		    iconmgr_textx, Scr->IconManagerFont.y
++			+ (Tmp_win->list->height-Scr->IconManagerFont.height)/2,
++#else
+ 		    iconmgr_textx, Scr->IconManagerFont.y+4,
++#endif
+ 		    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
+ 		DrawIconManagerBorder(Tmp_win->list);
+ 		flush_expose (Event.xany.window);

@@ -1,0 +1,14 @@
+--- gc.c.orig2	2007-09-18 10:37:45.000000000 +0200
++++ gc.c	2007-09-20 07:39:22.000000000 +0200
+@@ -96,8 +96,11 @@
+     gcm = 0;
+     gcm |= GCForeground;    gcv.foreground = Scr->MenuC.fore;
+     gcm |= GCBackground;    gcv.background = Scr->MenuC.back;
++
++#if !defined TWM_USE_XFT    /* XFontStruct dependency */
+     if (!use_fontset)
+ 	{gcm |= GCFont;	    gcv.font =  Scr->MenuFont.font->fid;}
++#endif
+ 
+     Scr->MenuGC = XCreateGC(dpy, Scr->Root, gcm, &gcv);
+ 

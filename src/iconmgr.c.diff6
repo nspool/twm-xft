@@ -1,0 +1,11 @@
+--- iconmgr.c.orig6	2007-11-06 10:34:55.000000000 +0100
++++ iconmgr.c	2007-11-06 10:45:17.000000000 +0100
+@@ -624,6 +624,8 @@
+ 
+ void DrawIconManagerBorder(WList *tmp)
+ {
++    /* speedup: only draw if iconmanager window mapped: */
++    if (tmp->iconmgr->twm_win->mapped)
+     {
+ 	XSetForeground(dpy, Scr->NormalGC, tmp->IconManagerC.fore);
+ 	    XDrawRectangle(dpy, tmp->w, Scr->NormalGC, 2, 2,

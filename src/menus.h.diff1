@@ -1,0 +1,25 @@
+--- menus.h.orig1	2007-09-15 19:07:53.000000000 +0200
++++ menus.h	2007-09-18 11:58:55.000000000 +0200
+@@ -77,10 +77,8 @@
+     struct MenuRoot *root;	/* back pointer to my MenuRoot */
+     char *item;			/* the character string displayed */
+     char *action;		/* action to be performed */
+-    Pixel fore;			/* foreground color */
+-    Pixel back;			/* background color */
+-    Pixel hi_fore;		/* highlight foreground */
+-    Pixel hi_back;		/* highlight background */
++    ColorPair MenuC;		/* menuitem nonhighlight foreground/background */
++    ColorPair MenuHiC;		/* menuitem highlight foreground/background */
+     short item_num;		/* item number of this menu */
+     short x;			/* x coordinate for text */
+     short func;			/* twm built in function */
+@@ -98,8 +96,7 @@
+     char *name;			/* name of root */
+     Window w;			/* the window of the menu */
+     Window shadow;		/* the shadow window */
+-    Pixel hi_fore;		/* highlight foreground */
+-    Pixel hi_back;		/* highlight background */
++    ColorPair MenuHiC;		/* highlight foreground/background */
+     short mapped;		/* NEVER_MAPPED, UNMAPPED, or MAPPED */
+     short height;		/* height of the menu */
+     short width;		/* width of the menu */

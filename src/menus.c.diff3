@@ -1,0 +1,52 @@
+--- menus.c.orig3	2007-10-29 21:52:08.000000000 +0100
++++ menus.c	2007-10-29 22:36:03.000000000 +0100
+@@ -363,7 +363,12 @@
+     fprintf(stderr, "Paint entry\n");
+ #endif
+     y_offset = mi->item_num * Scr->EntryHeight;
++#ifdef TWM_USE_XFT /*spacing*/
++    text_y = y_offset + Scr->MenuFont.y		/*text vertically centered*/
++			+ (Scr->EntryHeight - Scr->MenuFont.height) / 2;
++#else
+     text_y = y_offset + Scr->MenuFont.y;
++#endif
+ 
+     if (mi->func != F_TITLE)
+     {
+@@ -420,7 +425,12 @@
+ 					     &Scr->pullW, &Scr->pullH);
+ 	    }
+ 	    x = mr->width - Scr->pullW - 5;
++#ifdef TWM_USE_XFT /*spacing*/
++	    y = y_offset	/*submenu iconic knob vertically centered*/
++			+ (Scr->EntryHeight - Scr->pullH) / 2;
++#else
+ 	    y = y_offset + ((Scr->MenuFont.height - Scr->pullH) / 2);
++#endif
+ 	    XCopyPlane(dpy, Scr->pullPm, mr->w, gc, 0, 0,
+ 		Scr->pullW, Scr->pullH, x, y, 1);
+ 	}
+@@ -772,7 +782,11 @@
+     XSetWindowAttributes attributes;
+     Colormap cmap = Scr->TwmRoot.cmaps.cwins[0]->colormap->c;
+ 
++#ifdef TWM_USE_XFT /*spacing*/
++    Scr->EntryHeight = 120*Scr->MenuFont.height/100; /*baselineskip 1.2*/
++#else
+     Scr->EntryHeight = Scr->MenuFont.height + 4;
++#endif
+ 
+     /* lets first size the window accordingly */
+     if (mr->mapped == NEVER_MAPPED)
+@@ -2634,7 +2648,11 @@
+     (void) sprintf(Info[n++], "Click to dismiss....");
+ 
+     /* figure out the width and height of the info window */
++#ifdef TWM_USE_XFT /*spacing*/
++    height = n * (120*Scr->DefaultFont.height/100); /*baselineskip 1.2*/
++#else
+     height = n * (Scr->DefaultFont.height+2);
++#endif
+     width = 1;
+     for (i = 0; i < n; i++)
+     {

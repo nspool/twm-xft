@@ -1,0 +1,57 @@
+--- menus.c.orig7	2007-11-06 10:36:36.000000000 +0100
++++ menus.c	2007-11-06 10:46:39.000000000 +0100
+@@ -364,6 +364,12 @@
+ #endif
+     y_offset = mi->item_num * Scr->EntryHeight;
+ #ifdef TWM_USE_XFT /*spacing*/
++#if 1 /*menu-title-bar*/
++    if (mi->func == F_TITLE)
++	text_y = y_offset + Scr->TitleBarFont.y - /*sic! added in twm.c*/ Scr->FramePadding
++			+ (Scr->EntryHeight - Scr->TitleBarFont.height) / 2;
++    else
++#endif
+     text_y = y_offset + Scr->MenuFont.y		/*text vertically centered*/
+ 			+ (Scr->EntryHeight - Scr->MenuFont.height) / 2;
+ #else
+@@ -445,6 +451,7 @@
+ 	XFillRectangle(dpy, mr->w, Scr->NormalGC, 0, y_offset,
+ 	    mr->width, Scr->EntryHeight);
+ 
++	if (Scr->MenuBorderWidth > 0) /*draw separators only if menu has borders*/
+ 	{
+ 	    XSetForeground(dpy, Scr->NormalGC, mi->MenuC.fore);
+ 	    /* now draw the dividing lines */
+@@ -457,7 +464,11 @@
+ 
+ 	/* finally render the title */
+ 	MyFont_DrawString(dpy, DRAW_WIN(mr,w),
++#if 1 /*menu-title-bar*/
++	    &Scr->TitleBarFont, DRAW_COL(mi,MenuC),
++#else
+ 	    &Scr->MenuFont, DRAW_COL(mi,MenuC),
++#endif
+ 	    mi->x, text_y, mi->item, mi->strlen);
+     }
+ }
+@@ -804,8 +815,13 @@
+ 		cur->x = 5;
+ 	    else
+ 	    {
++#if 1 /*menu-title-bar*/
++		cur->x = width - MyFont_TextWidth(&Scr->TitleBarFont, cur->item,
++		    cur->strlen);
++#else
+ 		cur->x = width - MyFont_TextWidth(&Scr->MenuFont, cur->item,
+ 		    cur->strlen);
++#endif
+ 		cur->x /= 2;
+ 	    }
+ 	}
+@@ -2647,6 +2663,7 @@
+ 	(void) sprintf(Info[n++], "Name             = \"%s\"", t->full_name);
+ 	(void) sprintf(Info[n++], "Class.res_name   = \"%s\"", t->class.res_name);
+ 	(void) sprintf(Info[n++], "Class.res_class  = \"%s\"", t->class.res_class);
++	(void) sprintf(Info[n++], "Icon name        = \"%s\"", t->icon_name);
+ 	Info[n++][0] = '\0';
+ 	(void) sprintf(Info[n++], "Geometry/root    = %dx%d+%d+%d", wwidth, wheight,
+ 		x, y);

@@ -1,0 +1,25 @@
+--- iconmgr.c.orig2	2007-10-29 21:00:45.000000000 +0100
++++ iconmgr.c	2007-10-29 21:13:42.000000000 +0100
+@@ -413,6 +413,12 @@
+ 			    CopyFromParent, (unsigned int) CopyFromParent,
+ 			    (Visual *) CopyFromParent, valuemask, &attributes);
+ 
++#ifdef TWM_USE_XFT
++    tmp->xft_w = XftDrawCreate (dpy, tmp->w, Scr->d_visual,
++				XDefaultColormap (dpy, Scr->screen));
++    CopyPixelToXftColor (XDefaultColormap (dpy, Scr->screen), 
++				tmp->IconManagerC.fore, &tmp->xft_IconManagerC);
++#endif
+ 
+     valuemask = (CWBackPixel | CWBorderPixel | CWEventMask | CWCursor);
+     attributes.background_pixel = tmp->IconManagerC.back;
+@@ -535,6 +541,9 @@
+     XDeleteContext(dpy, tmp->w, IconManagerContext);
+     XDeleteContext(dpy, tmp->w, TwmContext);
+     XDeleteContext(dpy, tmp->w, ScreenContext);
++#ifdef TWM_USE_XFT
++    XftDrawDestroy(tmp->xft_w);
++#endif
+     XDestroyWindow(dpy, tmp->w);
+     ip->count -= 1;
+     free((char *) tmp);

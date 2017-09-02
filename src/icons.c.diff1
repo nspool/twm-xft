@@ -1,0 +1,20 @@
+--- icons.c.orig1	2007-09-18 09:59:18.000000000 +0200
++++ icons.c	2007-09-18 09:52:11.000000000 +0200
+@@ -346,7 +346,7 @@
+     int x;
+ 
+ 
+-    FB(tmp_win->iconc.fore, tmp_win->iconc.back);
++    FB(tmp_win->IconC.fore, tmp_win->IconC.back);
+ 
+     tmp_win->forced = FALSE;
+     tmp_win->icon_not_ours = FALSE;
+@@ -522,7 +522,7 @@
+ 	tmp_win->icon_w = XCreateSimpleWindow(dpy, Scr->Root,
+ 	    0,0,
+ 	    tmp_win->icon_w_width, tmp_win->icon_w_height,
+-	    Scr->IconBorderWidth, tmp_win->icon_border, tmp_win->iconc.back);
++	    Scr->IconBorderWidth, tmp_win->IconBorderColor, tmp_win->IconC.back);
+ 	event_mask = ExposureMask;
+     }
+ 

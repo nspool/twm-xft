@@ -1,0 +1,13 @@
+--- iconmgr.h.orig2	2007-09-18 10:37:26.000000000 +0200
++++ iconmgr.h	2007-09-18 12:18:52.000000000 +0200
+@@ -45,6 +45,10 @@
+     struct IconMgr *iconmgr;
+     Window w;
+     Window icon;
++#ifdef TWM_USE_XFT
++    XftDraw *xft_w;			/* iconmanager window name Xft context */
++    XftColor xft_IconManagerC;		/* iconmanager window name color */
++#endif
+     int x, y, width, height;
+     int row, col;
+     int me;
